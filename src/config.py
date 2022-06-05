@@ -1,1 +1,0 @@
-DB_FILE = r'C:\Users\rajat\IdeaProjects\AutoMod\data\dev.db'

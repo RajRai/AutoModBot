@@ -8,7 +8,8 @@ if __name__ == "__main__":
 
     table = """ CREATE TABLE IF NOT EXISTS SETTINGS (
                 guild INTEGER PRIMARY KEY,
-                prefix CHAR(1) DEFAULT '!'
+                prefix CHAR(1) DEFAULT '!',
+                enabled INTEGER(1) DEFAULT 1
             ); """
     execute(table)
 
@@ -16,6 +17,7 @@ if __name__ == "__main__":
                 time DATETIME DEFAULT(STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW')),
                 user INTEGER NOT NULL,
                 message VARCHAR,
+                mentions VARCHAR,
                 PRIMARY KEY (time, user)
             ); """
     execute(table)

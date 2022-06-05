@@ -1,0 +1,37 @@
+{
+  "_comment": "I know what you're thinking, like 'why is this here when there's a settings table, or why isn't the settings",
+  "_comment2": "table here'. This JSON is meant to emulate what will come from the web UI. Ideologically, this data doesn't",
+  "_comment3": "really exist in a persistent form. If another level of nesting were added which keys it on guild, then",
+  "_comment4": "this could just serve as the settings. Also I've only been adding stuff as features were added, after",
+  "_comment5": "the skeleton",
+  "automod": {
+    "enabled": true,
+    "saved_messages": 100,
+    "blacklist": {
+      "enabled": true,
+      "rules": [],
+      "timeouts": []
+    },
+    "mentions": {
+      "enabled": true,
+      "rules": [],
+      "timeouts": []
+    },
+    "spam": {
+      "enabled": true,
+      "rules": [],
+      "timeouts": []
+    },
+    "repeat": {
+      "enabled": true,
+      "rules": [
+        {
+          "cutoff": "3d",
+          "messages": 2,
+          "limit": 0.9
+        }
+      ],
+      "timeouts": []
+    }
+  }
+}
