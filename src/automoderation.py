@@ -28,41 +28,71 @@ def check_blacklist(message: Message) -> (bool, str):
         for word in message.content.split() + [message.content.replace(" ", ""), message.content]:
             if rule.exact:
                 if rule.content.lower() == word.lower() or rule.content.lower() in word.lower():
-                    return True, f'EXACT - {rule.content}'
+                    return True, f'EXACT - {rule.content}', rule
             else:
                 ratio = fuzz.ratio(rule.content.lower(), word.lower())
-                if ratio > rule.limit:
-                    return True, f'FUZZY RATIO - {rule.content} - Score: {ratio}'
+                if ratio > rule.threshold:
+                    return True, f'FUZZY RATIO - {rule.content} - Score: {ratio}', rule
         ratio = fuzz.partial_ratio(rule.content.lower(), message.content.lower())
-        if ratio > rule.limit and len(rule.content) < len(message.content):
-            return True, f'FUZZY PARTIAL RATIO - {rule.content} - Score: {ratio}'
+        if ratio > rule.threshold and len(rule.content) < len(message.content):
+            return True, f'FUZZY PARTIAL RATIO - {rule.content} - Score: {ratio}', rule
         ratio = fuzz.token_set_ratio(rule.content, message.content)
-        if ratio > rule.limit and ' ' not in rule.content:  # If a space is included, don't filter sub words independently
-            return True, f'TOKEN SET RATIO - {rule.content} - Score: {ratio}'
-    return False, ''
+        if ratio > rule.threshold and ' ' not in rule.content:  # If a space is included, don't filter sub words independently
+            return True, f'TOKEN SET RATIO - {rule.content} - Score: {ratio}', rule
+    return False, '', None
 
 
-def check_repeated(message: Message, setting=settings.automod.repeat, discriminator=None) -> (bool, list):
+def check_frequency_limited(message: Message, messages, rule, out_arr, discriminant) -> (bool, list):
+    cutoff = datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(
+        seconds=convert_to_seconds(rule.cutoff))
+    for old in messages[::-1]:
+        if pytz.UTC.localize(datetime.datetime.strptime(old[1][:-4], '%Y-%m-%d %H:%M:%S')) < cutoff:
+            break
+        if discriminant(old, message):
+            out_arr.append(old)
+    return len(out_arr) >= rule.limit, out_arr, rule
+
+
+def check_spam(message: Message):
     messages = queries.get_messages(0)  # Replace 0 with message.author.id
-    lo_settings = setting
-    for rule in lo_settings.rules:
+    for rule in settings.automod.repeat.rules:
+        spam = []
+        result = check_frequency_limited(message, messages, rule, spam, discriminant=lambda: True)
+        if result[0]:
+            return result
+    return False, [], None
+
+
+def check_repeat(message: Message):
+    messages = queries.get_messages(0)  # Replace 0 with message.author.id
+    for rule in settings.automod.repeat.rules:
+        repeated = []
+        result = check_frequency_limited(message, messages, rule, repeated,
+                                         discriminant=lambda s1, s2: fuzz.ratio(s1.content.lower(),
+                                                                                s2.content.lower()) > rule.threshold)
+        if result[0]:
+            return result
+    return False, [], None
+
+
+def check_mentions(message: Message):
+    if len(message.mentions) + len(message.role_mentions) > 0 or message.mention_everyone:
+        return None
+    messages = queries.get_mentions(message.author.id)
+    for rule in settings.automod.mentions.rules:
+        if (rule.content.lower() not in message.mentions or rule.content.lower() not in message.role_mentions
+                or (rule.content.lower() == 'everyone' and not message.mention_everyone)):
+            return False, [], None
+        mentions = []
         cutoff = datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(
             seconds=convert_to_seconds(rule.cutoff))
-        count = 0
-        repeated = []
-        ret = False
-        if discriminator is None:
-            discriminator = lambda s1, s2: fuzz.ratio(s1, s2) > rule.limit
-        for old in messages:
+        for old in messages[::-1]:
             if pytz.UTC.localize(datetime.datetime.strptime(old[1][:-4], '%Y-%m-%d %H:%M:%S')) < cutoff:
-                continue
-            if discriminator(old[0].lower(), message.lower()):
-                count += 1
-                repeated.append(old)
-            if count >= rule.messages:
-                ret = True
-        if ret:
-            return ret, repeated
+                break
+            if rule.content.lower() in old[0].lower() or rule.content.lower() in old[1].lower() or (rule.content.lower() == 'everyone' and old[2] == 1):
+                mentions.append(old)
+        if len(mentions) >= rule.limit - 1:
+            return True, mentions, rule
     return False, []
 
 
@@ -77,6 +107,8 @@ def auto_moderate(message: Message):
     if settings.blacklist.enabled:
         flags['blacklist'] = check_blacklist(message)
     if settings.repeated.enabled:
-        flags['repeat'] = check_repeated(message)
+        flags['repeat'] = check_repeat(message)
     if settings.spam.enabled:
-        flags['spam'] = check_repeated(message, setting=settings.automod.spam, discriminator=lambda: True)
+        flags['spam'] = check_spam(message)
+    if settings.mentions.enabled:
+        flags['mentions'] = check_mentions(message)

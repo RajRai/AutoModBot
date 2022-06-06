@@ -5,6 +5,12 @@ from config.config import DB_FILE, settings
 import automoderation
 
 
+def _serialize_list(list):
+    out = ''
+    for x in list:
+        out += str(x) + '\t'
+    return out.strip()
+
 def _create_connection(db_file):
     conn = None
     try:
@@ -42,19 +48,26 @@ def prefix(bot, message):
     return result[0][1] if len(result) > 0 else None
 
 
-def get_messages(user):
+def get_messages(user: int):
     rows = select(f"""SELECT message, time FROM MESSAGES WHERE user = {user}""")
     return list(rows)
 
+def get_mentions(user: int):
+    return list(select(f"""SELECT user_mentions, role_mentions, mentions_everyone FROM MESSAGES 
+                           WHERE user = {id} 
+                           AND (user_mentions != '' OR role_mentions != '' OR mentions_everyone != 0) """))
+
 
 def store_message(message: Message):
-    execute(f"""INSERT INTO MESSAGES (user, message, mentions) VALUES ({message.author.id},{message.content})""")
+    execute(f"""INSERT INTO MESSAGES (user, message, user_mentions, role_mentions, mentions_everyone) 
+                VALUES ({message.author.id},{message.content},{_serialize_list(message.mentions)},
+                        {_serialize_list(message.role_mentions)},{1 if message.mention_everyone else 0})""")
 
 
-def prune_history(id):
-    count = select(f"""SELECT COUNT(*) FROM MESSAGES WHERE user = {id}""")[0][0]
+def prune_history(user: int):
+    count = select(f"""SELECT COUNT(*) FROM MESSAGES WHERE user = {user}""")[0][0]
     diff = count - settings.automod.saved_messages
-    execute(f"""DELETE FROM MESSAGES WHERE rowid IN (SELECT rowid FROM MESSAGES WHERE user = {id} LIMIT {diff} )""")
+    execute(f"""DELETE FROM MESSAGES WHERE rowid IN (SELECT rowid FROM MESSAGES WHERE user = {user} LIMIT {diff} )""")
 
 
 def is_enabled(message: Message):

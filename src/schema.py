@@ -17,7 +17,9 @@ if __name__ == "__main__":
                 time DATETIME DEFAULT(STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW')),
                 user INTEGER NOT NULL,
                 message VARCHAR,
-                mentions VARCHAR,
+                user_mentions VARCHAR default '',
+                role_mentions VARCHAR default '',
+                mentions_everyone INTEGER(1) default 0,
                 PRIMARY KEY (time, user)
             ); """
     execute(table)

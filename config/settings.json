@@ -27,8 +27,8 @@
       "rules": [
         {
           "cutoff": "3d",
-          "messages": 2,
-          "limit": 0.9
+          "limit": 2,
+          "threshold": 0.9
         }
       ],
       "timeouts": []
