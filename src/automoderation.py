@@ -19,6 +19,8 @@ if __name__ == "__main__":
 
 seconds_per_unit = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
 
+timeouts = {}
+
 
 def convert_to_seconds(s):
     return int(s[:-1]) * seconds_per_unit[s[-1]]
@@ -119,7 +121,7 @@ async def log_timeout(message, duration, reason, info):
     user = message.author
     queries.log_timeout(user.id, duration, reason, message.content)
     out = f'Handled message and timed out user {str(user)} {f"({user.nick}) " if user.nick is not None else ""}' \
-          f'with duration {duration/60}m for reason: **{reason}**.\n' \
+          f'with duration {duration / 60}m for reason: **{reason}**.\n' \
           f'Message: {message.content}\n' \
           f'Time: {datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%f")}\n' \
           f'Info: \n'
@@ -141,25 +143,23 @@ async def log_timeout(message, duration, reason, info):
     await ch.send(out)
 
 
-def timeout_user(user_id: int, guild_id: int, until: int):
-    BASE = "https://discord.com/api/v9/"
-    endpoint = f'guilds/{guild_id}/members/{user_id}'
-    headers = {"Authorization": f"Bot {TOKEN}"}
-    url = BASE + endpoint
-    timeout = (datetime.datetime.utcnow() + datetime.timedelta(minutes=until)).isoformat()
-    json = {'communication_disabled_until': timeout}
-    session = requests.patch(url, json=json, headers=headers)
-    if session.status_code in range(200, 299):
-        return session.json()
-
-
 async def give_timeout(message: Message, reason: str, info: tuple):
     await message.delete()
     time = get_timeout_duration(message.author.id, info[2])
-    timeout_user(message.author.id, message.guild.id, int(time / 60))
+    timeout = (datetime.datetime.utcnow() + datetime.timedelta(minutes=time / 60)).isoformat()
+    timeouts[(message.author.id, message.guild.id)] = timeout, reason, message.content
     out = f'You were given a timeout of {int(time / 60)} minutes for the following reason: **{reason}**.\n' \
           f'Your message: {message.content}'
     await log_timeout(message, time, reason, info)
+    await message.author.send(out)
+
+
+async def notify_timeout(message: Message):
+    await message.delete()
+    timeout = timeouts[message.author.id, message.guild.id]
+    time = timeout[0] - datetime.datetime.utcnow()
+    out = f'You still have a timeout of {time.total_seconds / 60} minutes for the following reason: **{timeout[2]}**.\n' \
+          f'Your message: {timeout[3]}'
     await message.author.send(out)
 
 
@@ -170,6 +170,9 @@ async def auto_moderate(message: Message):
         'repeat': None,
         'mentions': None
     }
+
+    if timeouts[(message.author.id, message.guild.id)] > datetime.datetime.utcnow():
+        await notify_timeout(message.author)
 
     if settings.automod.blacklist.enabled:
         flags['blacklist'] = check_blacklist(message)
@@ -188,4 +191,3 @@ async def auto_moderate(message: Message):
         await give_timeout(message, 'spam', flags['spam'])
     if flags['mentions'][0]:
         await give_timeout(message, 'mass-mentions', flags['mentions'])
-

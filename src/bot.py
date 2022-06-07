@@ -2,22 +2,13 @@ import sys
 import discord
 from discord import *
 from discord.ext import commands
-from quart import Quart, render_template, request, session, redirect, url_for
 from quart_discord import DiscordOAuth2Session
-from src.private import SECRET_KEY, CLIENT_ID, CLIENT_SECRET, TOKEN
+from src.private import TOKEN
 import src.queries as qr
 from src.automoderation import auto_moderate
 
 prefix = qr.prefix
 
-app = Quart(__name__)
-
-app.config["SECRET_KEY"] = SECRET_KEY
-app.config["DISCORD_CLIENT_ID"] = CLIENT_ID  # Discord client ID.
-app.config["DISCORD_CLIENT_SECRET"] = CLIENT_SECRET  # Discord client secret.
-app.config["DISCORD_REDIRECT_URI"] = "http://github.com"
-
-discordOAuth = DiscordOAuth2Session(app)
 intents = discord.Intents.default()
 bot = commands.Bot(command_prefix=prefix, intents=intents)
 

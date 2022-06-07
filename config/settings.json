@@ -1,105 +1,152 @@
-{
-  "_comment": "I know what you're thinking, like 'why is this here when there's a settings table, or why isn't the settings",
-  "_comment2": "table here'. This JSON is meant to emulate what will come from the web UI. Ideologically, this data doesn't",
-  "_comment3": "really exist in a persistent form. If another level of nesting were added which keys it on guild, then",
-  "_comment4": "this could just serve as the settings. Also I've only been adding stuff as features were added, after",
-  "_comment5": "the skeleton",
-  "logging_channel": "automod-logging",
-  "automod": {
-    "enabled": true,
-    "saved_messages": 100,
-    "blacklist": {
-      "enabled": true,
-      "rules": [
-        {
-          "content": "pandas",
-          "exact": false,
-          "threshold": 0.9,
-          "timeout": "ExampleConfig2"
-        }
-      ]
-    },
-    "mentions": {
-      "enabled": true,
-      "rules": [
-        {
-          "limit": 2,
-          "timeout": "ExampleConfig3",
-          "content": [
-            "everyone",
-            "moderator",
-            "admin"
+[
+  {
+    "guild": "default",
+    "settings": {
+      "logging_channel": "automod-logging",
+      "automod": {
+        "enabled": false,
+        "saved_messages": 100,
+        "blacklist": {
+          "enabled": false,
+          "rules": []
+        },
+        "mentions": {
+          "enabled": false,
+          "rules": []
+        },
+        "spam": {
+          "enabled": false,
+          "rules": []
+        },
+        "repeat": {
+          "enabled": false,
+          "rules": []
+        },
+        "timeout": []
+      }
+    }
+  },
+  {
+    "guild": 191217347975970817,
+    "settings": {
+      "logging_channel": "automod-logging",
+      "automod": {
+        "enabled": true,
+        "saved_messages": 100,
+        "blacklist": {
+          "enabled": true,
+          "rules": [
+            {
+              "content": "pandas",
+              "exact": false,
+              "threshold": 0.9,
+              "timeout": "ExampleConfig2"
+            }
           ]
-        }
-      ]
-    },
-    "spam": {
-      "enabled": true,
-      "rules": []
-    },
-    "repeat": {
-      "enabled": true,
-      "rules": [
-        {
-          "cutoff": "20s",
-          "limit": 2,
-          "threshold": 0.9,
-          "timeout": "ExampleConfig1"
-        }
-      ]
-    },
-    "timeout": [
-      {
-        "name": "ExampleConfig1",
-        "steps": [
+        },
+        "mentions": {
+          "enabled": true,
+          "rules": [
+            {
+              "enabled": true,
+              "limit": 2,
+              "timeout": "ExampleConfig3",
+              "cutoff": "1d",
+              "content": [
+                "everyone",
+                "moderator",
+                "admin"
+              ]
+            }
+          ]
+        },
+        "spam": {
+          "enabled": true,
+          "rules": []
+        },
+        "repeat": {
+          "enabled": true,
+          "rules": [
+            {
+              "cutoff": "20s",
+              "limit": 2,
+              "threshold": 0.9,
+              "timeout": "ExampleConfig1"
+            }
+          ]
+        },
+        "timeout": [
           {
-            "offenseCount": 1,
-            "timeout": "1m"
+            "name": "ExampleConfig1",
+            "steps": [
+              {
+                "enabled": true,
+                "offenseCount": 1,
+                "cutoff": "1d",
+                "timeout": "1m"
+              },
+              {
+                "enabled": true,
+                "offenseCount": 3,
+                "cutoff": "1d",
+                "timeout": "5m"
+              },
+              {
+                "enabled": true,
+                "offenseCount": 5,
+                "cutoff": "1d",
+                "timeout": "30m"
+              }
+            ]
           },
           {
-            "offenseCount": 3,
-            "timeout": "5m"
+            "name": "ExampleConfig2",
+            "steps": [
+              {
+                "enabled": true,
+                "offenseCount": 1,
+                "cutoff": "30d",
+                "timeout": "6h"
+              },
+              {
+                "enabled": true,
+                "offenseCount": 2,
+                "cutoff": "30d",
+                "timeout": "12h"
+              },
+              {
+                "enabled": true,
+                "offenseCount": 3,
+                "cutoff": "30d",
+                "timeout": "24h"
+              }
+            ]
           },
           {
-            "offenseCount":  5,
-            "timeout": "30m"
-          }
-        ]
-      },
-      {
-        "name": "ExampleConfig2",
-        "steps": [
-          {
-            "offenseCount": 1,
-            "timeout": "6h"
-          },
-          {
-            "offenseCount": 2,
-            "timeout": "12h"
-          },
-          {
-            "offenseCount":  3,
-            "timeout": "24h"
-          }
-        ]
-      },
-      {
-        "name": "ExampleConfig3",
-        "steps": [
-          {
-            "offenseCount": 1,
-            "timeout": "1m"
-          },
-          {
-            "offenseCount": 5,
-            "timeout": "1h"
-          },
-          {
-            "offenseCount":  10,
-            "timeout": "6h"
+            "name": "ExampleConfig3",
+            "steps": [
+              {
+                "enabled": true,
+                "offenseCount": 1,
+                "cutoff": "1d",
+                "timeout": "1m"
+              },
+              {
+                "enabled": true,
+                "offenseCount": 5,
+                "cutoff": "1d",
+                "timeout": "1h"
+              },
+              {
+                "enabled": true,
+                "offenseCount": 10,
+                "cutoff": "1d",
+                "timeout": "6h"
+              }
+            ]
           }
         ]
       }
-    ]
+    }
   }
-}
+]

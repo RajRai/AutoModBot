@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<HEAD>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <SCRIPT language="javascript">
+        function addRowProfanity(tableID) {
+            var table = document.getElementById(tableID);
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+            //Column 1
+            var cell1 = row.insertCell(0);
+            var element1 = document.createElement("input");
+            element1.type = "button";
+            var btnName = "button" + (rowCount + 1);
+            element1.name = btnName;
+            element1.setAttribute('value', 'Delete'); // or element1.value = "button";
+            element1.onclick = function () { removeRow(btnName, tableID); }
+            cell1.appendChild(element1);
+            //Column 2
+            var cell2 = row.insertCell(1);
+            var element2 = document.createElement("input");
+            element2.type = "checkbox";
+            element2.id = "enabled-checkbox-" + rowCount + '-' + tableID;
+            cell2.appendChild(element2);
+            //Column 3
+            var cell3 = row.insertCell(2);
+            var element3 = document.createElement("input");
+            element3.type = "text";
+            cell3.appendChild(element3);
+            var cell4 = row.insertCell(3);
+            var element4 = document.createElement("input");
+            element4.type = "checkbox";
+            element4.id = "exact-checkbox-" + rowCount + tableID;
+            cell4.appendChild(element4);
+            var label = document.createElement("label");
+            label.htmlFor = "exact-checkbox-" + rowCount + '-' + tableID;
+            cell4.appendChild(label);
+            var cell5 = row.insertCell(4);
+            var element5 = document.createElement("input");
+            element5.type = "text";
+            cell5.appendChild(element5);
+            var cell6 = row.insertCell(5);
+            var element6 = document.createElement("input");
+            element6.type = "text";
+            cell6.appendChild(element6);
+        }
+        function addRowRepeat(tableID) {
+            var table = document.getElementById(tableID);
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+            //Column 1
+            var cell1 = row.insertCell(0);
+            var element1 = document.createElement("input");
+            element1.type = "button";
+            var btnName = "button" + (rowCount + 1);
+            element1.name = btnName;
+            element1.setAttribute('value', 'Delete'); // or element1.value = "button";
+            element1.onclick = function () { removeRow(btnName, tableID); }
+            cell1.appendChild(element1);
+            //Column 2
+            var cell2 = row.insertCell(1);
+            var element2 = document.createElement("input");
+            element2.type = "checkbox";
+            element2.id = "enabled-checkbox-" + rowCount + '-' + tableID;
+            cell2.appendChild(element2);
+            //Column 3
+            var cell3 = row.insertCell(2);
+            var element3 = document.createElement("input");
+            element3.type = "text";
+            cell3.appendChild(element3);
+            var cell4 = row.insertCell(3);
+            var element4 = document.createElement("input");
+            element4.type = "text";
+            cell4.appendChild(element4);
+            var cell5 = row.insertCell(4);
+            var element5 = document.createElement("input");
+            element5.type = "text";
+            cell5.appendChild(element5);
+            var cell6 = row.insertCell(5);
+            var element6 = document.createElement("input");
+            element6.type = "text";
+            cell6.appendChild(element6);
+        }
+        function addRowSpam(tableID) {
+            var table = document.getElementById(tableID);
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+            //Column 1
+            var cell1 = row.insertCell(0);
+            var element1 = document.createElement("input");
+            element1.type = "button";
+            var btnName = "button" + (rowCount + 1);
+            element1.name = btnName;
+            element1.setAttribute('value', 'Delete'); // or element1.value = "button";
+            element1.onclick = function () { removeRow(btnName, tableID); }
+            cell1.appendChild(element1);
+            //Column 2
+            var cell2 = row.insertCell(1);
+            var element2 = document.createElement("input");
+            element2.type = "checkbox";
+            element2.id = "enabled-checkbox-" + rowCount + '-' + tableID;
+            cell2.appendChild(element2);
+            //Column 3
+            var cell3 = row.insertCell(2);
+            var element3 = document.createElement("input");
+            element3.type = "text";
+            cell3.appendChild(element3);
+            var cell4 = row.insertCell(3);
+            var element4 = document.createElement("input");
+            element4.type = "text";
+            cell4.appendChild(element4);
+            var cell5 = row.insertCell(4);
+            var element5 = document.createElement("input");
+            element5.type = "text";
+            cell5.appendChild(element5);
+        }
+
+        function addRowMentions(tableID) {
+            var table = document.getElementById(tableID);
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+            //Column 1
+            var cell1 = row.insertCell(0);
+            var element1 = document.createElement("input");
+            element1.type = "button";
+            var btnName = "button" + (rowCount + 1);
+            element1.name = btnName;
+            element1.setAttribute('value', 'Delete'); // or element1.value = "button";
+            element1.onclick = function () { removeRow(btnName, tableID); }
+            cell1.appendChild(element1);
+            //Column 2
+            var cell2 = row.insertCell(1);
+            var element2 = document.createElement("input");
+            element2.type = "checkbox";
+            element2.id = "enabled-checkbox-" + rowCount + '-' + tableID;
+            cell2.appendChild(element2);
+            //Column 3
+            var cell3 = row.insertCell(2);
+            var element3 = document.createElement("textarea");
+            element3.cols = "25";
+            element3.rows = "3";
+            cell3.appendChild(element3);
+            var cell4 = row.insertCell(3);
+            var element4 = document.createElement("input");
+            element4.type = "text";
+            cell4.appendChild(element4);
+            var cell5 = row.insertCell(4);
+            var element5 = document.createElement("input");
+            element5.type = "text";
+            cell5.appendChild(element5);
+            var cell6 = row.insertCell(5);
+            var element6 = document.createElement("input");
+            element6.type = "text";
+            cell6.appendChild(element6);
+        }
+        function addRowConfig(tableID) {
+            var table = document.getElementById(tableID);
+            var rowCount = table.rows.length;
+            var row = table.insertRow(rowCount);
+            //Column 1
+            var cell1 = row.insertCell(0);
+            var element1 = document.createElement("input");
+            element1.type = "button";
+            var btnName = "button" + (rowCount + 1);
+            element1.name = btnName;
+            element1.setAttribute('value', 'Delete'); // or element1.value = "button";
+            element1.onclick = function () { removeRow(btnName, tableID); }
+            cell1.appendChild(element1);
+            //Column 2
+            var cell2 = row.insertCell(1);
+            var element2 = document.createElement("input");
+            element2.type = "checkbox";
+            element2.id = "enabled-checkbox-" + rowCount + '-' + tableID;
+            cell2.appendChild(element2);
+            //Column 3
+            var cell3 = row.insertCell(2);
+            var element3 = document.createElement("input");
+            element3.type = "text";
+            cell3.appendChild(element3);
+            var cell4 = row.insertCell(3);
+            var element4 = document.createElement("input");
+            element4.type = "text";
+            cell4.appendChild(element4);
+            var cell5 = row.insertCell(4);
+            var element5 = document.createElement("input");
+            element5.type = "text";
+            cell5.appendChild(element5);
+        }
+        function removeRow(btnName, tableID) {
+            try {
+                var table = document.getElementById(tableID);
+                var rowCount = table.rows.length;
+                var deleted = false;
+                for (var i = 0; i < rowCount; i++) {
+                    var row = table.rows[i];
+                    var rowObj = row.cells[0].childNodes[0];
+                    try {
+                        if (rowObj.name == btnName) {
+                            table.deleteRow(i);
+                            rowCount--;
+                            deleted = true;
+                            continue;
+                        }
+                    } catch (e) {}
+                    if (deleted)
+                        row.cells[1].innerHTML = i-1;
+                }
+            }
+            catch (e) {
+                alert(e);
+            }
+        }
+        function addConfigTable(tableID) {
+            var area = document.getElementById("timeout_config_div");
+            var numberOfChildren = area.getElementsByTagName('*').length
+            var HTML =
+                `<div id="timeout_config_div_${numberOfChildren}"><p>\n` +
+                `    <label for="config_name_${numberOfChildren}">Configuration Name:</label>` +
+                `    <INPUT type="text" id=name_timeout_config_table_${numberOfChildren} value="" name="config_name_${numberOfChildren}">\n` +
+                `    <TABLE id="timeout_config_table_${numberOfChildren}" width="350px" border="1">\n` +
+                '        <tr>\n' +
+                '            <TH></TH>\n' +
+                '            <TH>Enabled?</TH>\n' +
+                '            <TH>Offense count for tier</TH>\n' +
+                '            <TH>Time period for offense count (i.e 1d, 1w. Month+ does not work)</TH>\n' +
+                '            <TH>Timeout duration (i.e 30m, 1h, etc)</TH>\n' +
+                '        </tr>\n' +
+                '        <TR>\n' +
+                '            <TD><input type="button" name="button1" value="Delete" onclick="removeRow(\'button1\')"></TD>\n' +
+                `            <TD><input name="enabled-checkbox[]" access="false" id="enabled-checkbox-0-timeout_config_${numberOfChildren}" value="exact" type="checkbox" checked="checked"></TD>\n` +
+                '            <TD><input type="text" value="" name="offenses"></TD>\n' +
+                '            <TD><input type="text" value="" name="period"></TD>\n' +
+                '            <TD><input type="text" value="" name="duration"></TD>\n' +
+                '        </TR>\n' +
+                '    </TABLE>\n' +
+                `    <INPUT type="button" value="Add Row" onclick="addRowConfig(\'timeout_config_table_${numberOfChildren}\')">\n` +
+                `    <INPUT type="button" value="Delete Configuration" onclick="deleteConfigTable(\'timeout_config_div_${numberOfChildren}\')">`
+                '</p><br></div>'
+            area.innerHTML += HTML
+        }
+        function deleteConfigTable(divID){
+            var elem = document.getElementById(divID);
+            return elem.parentNode.removeChild(elem);
+        }
+        function getElementsStartsWithId( id ) {
+            var children = document.body.getElementsByTagName('*');
+            var elements = [], child;
+            for (var i = 0, length = children.length; i < length; i++) {
+                child = children[i];
+                if (child.id.substr(0, id.length) == id)
+                    elements.push(child);
+            }
+            return elements;
+        }
+        function dumpJson(){
+            let i;
+            var table = document.getElementById('profanity_settings');
+            var jsonArr = [];
+            var automod = {};
+            for(i = 1; i < table.rows.length; i++){
+                var row = table.rows[i];
+                var col = row.cells;
+                var jsonObj = {
+                    enabled : col[1].firstChild.checked,
+                    content : col[2].firstChild.value,
+                    exact : col[3].firstChild.checked,
+                    threshold : parseFloat(col[4].firstChild.value),
+                    timeout : col[5].firstChild.value
+                }
+                jsonArr.push(jsonObj);
+            }
+            automod.blacklist = jsonArr;
+            jsonArr = [];
+
+            table = document.getElementById('spam_settings');
+            for(i=1; i < table.rows.length; i++){
+                row = table.rows[i];
+                col = row.cells;
+                jsonObj = {
+                    enabled : col[1].firstChild.checked,
+                    cutoff : col[2].firstChild.value,
+                    limit : parseInt(col[3].firstChild.value),
+                    timeout : col[4].firstChild.value
+                }
+                jsonArr.push(jsonObj);
+            }
+            automod.spam = jsonArr;
+            jsonArr = [];
+
+            table = document.getElementById('repeat_settings');
+            for(i=1; i < table.rows.length; i++){
+                row = table.rows[i];
+                col = row.cells;
+                jsonObj = {
+                    enabled : col[1].firstChild.checked,
+                    cutoff : col[2].firstChild.value,
+                    limit : parseInt(col[3].firstChild.value),
+                    threshold: parseFloat(col[4].firstChild.value),
+                    timeout : col[5].firstChild.value
+                }
+                jsonArr.push(jsonObj);
+            }
+            automod.repeat = jsonArr;
+            jsonArr = [];
+
+            table = document.getElementById('mention_settings');
+            for(i=1; i < table.rows.length; i++){
+                row = table.rows[i];
+                col = row.cells;
+                jsonObj = {
+                    enabled : col[1].firstChild.checked,
+                    content : col[2].firstChild.value.split("\n"),
+                    limit : parseInt(col[3].firstChild.value),
+                    cutoff: col[4].firstChild.value,
+                    timeout : col[5].firstChild.value
+                }
+                jsonArr.push(jsonObj);
+            }
+            automod.mentions = jsonArr;
+            jsonArr = [];
+
+            let tables = getElementsStartsWithId('timeout_config_table_')
+            for (i=0; i < tables.length; i++){
+                table = tables[i]
+                let name = document.getElementById('name_' + table.id)
+                for(i = 1; i < table.rows.length; i++){
+                    row = table.rows[i];
+                    col = row.cells;
+                    jsonObj = {
+                        name : name.value,
+                        steps : {
+                            enabled : col[1].firstChild.checked,
+                            offenseCount : col[2].firstChild.value,
+                            cutoff : col[3].firstChild.value,
+                            timeout : col[4].firstChild.value
+                        }
+                    }
+                    jsonArr.push(jsonObj);
+                }
+            }
+            automod.timeout = jsonArr;
+            document.getElementById("debug").innerHTML += '\n' + JSON.stringify(jsonArr);
+            jsonArr = [];
+
+            automod.saved_messages = parseInt(document.getElementById('message_count_input').value),
+            automod.enabled = document.getElementById('automod_enabled').checked
+            var settings = {
+                automod: automod
+            };
+            document.getElementById("debug").innerHTML += '\n' + JSON.stringify(settings);
+        }
+        function clickHandle(evt, name) {
+            let i, tabcontent, tablinks;
+
+            // This is to clear the previous clicked content.
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+
+            // Set the tab to be "active".
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+
+            // Display the clicked tab and set it to active.
+            document.getElementById(name).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </SCRIPT>
+</HEAD>
+
+<body>
+<h3>Click on the tabs below:</h3>
+<div id="debug"></div>
+<div class="tab">
+    <button class="tablinks" onclick="clickHandle(event, 'Profanity Filter')">Profanity Filter</button>
+    <button class="tablinks" onclick="clickHandle(event, 'Spam Settings')">Spam</button>
+    <button class="tablinks" onclick="clickHandle(event, 'Repeat Message Settings')">Repeat Messages</button>
+    <button class="tablinks" onclick="clickHandle(event, 'Mass Mention Settings')">Mass Mentions</button>
+    <button class="tablinks" onclick="clickHandle(event, 'Timeout Configurations')">Timeout Configurations</button>
+</div>
+<INPUT type="button" value="Dump JSON" onclick="dumpJson()">
+<br>
+<label for="message_count_input">Messages per user to save in DB:</label>
+<input type="text" value="" name="text" id="message_count_input">
+<br>
+<label for="automod_enabled">Automod Enabled:</label>
+<input name="automod-checkbox[]" id="automod_enabled" type="checkbox">
+<div id="Profanity Filter" class="tabcontent">
+    <TABLE id="profanity_settings" width="350px" border="1">
+        <tr>
+            <TH></TH>
+            <TH>Enabled?</TH>
+            <TH>Blacklist Text</TH>
+            <TH>Exact match?</TH>
+            <TH>Similarity threshold (0-1, 0.9 recommended)</TH>
+            <TH>Timeout Configuration Name</TH>
+        </tr>
+        <TR>
+            <TD><input type="button" name="button1" value="Delete" onclick="removeRow('button1')"></TD>
+            <TD><input name="enabled-checkbox[]" id="enabled-checkbox-0-profanity_settings" type="checkbox" checked="checked"></TD>
+            <TD><input type="text" value="" name="text"></TD>
+            <TD><input name="exact-checkbox[]" id="exact-checkbox-0-profanity_settings" type="checkbox"></TD>
+            <TD><input type="text" value="" name="threshold"></TD>
+            <TD><input type="text" value="" name="timeout"></TD>
+        </TR>
+    </TABLE>
+    <INPUT type="button" value="Add Row" onclick="addRowProfanity('profanity_settings')">
+</div>
+
+<div id="Spam Settings" class="tabcontent">
+    <TABLE id="spam_settings" width="350px" border="1">
+        <tr>
+            <TH></TH>
+            <TH>Enabled?</TH>
+            <TH>Time period (i.e 5s, 1m, etc.)</TH>
+            <TH>Message limit</TH>
+            <TH>Timeout Configuration Name</TH>
+        </tr>
+        <TR>
+            <TD><input type="button" name="button1" value="Delete" onclick="removeRow('button1')"></TD>
+            <TD><input name="enabled-checkbox[]" access="false" id="enabled-checkbox-0-spam_settings" value="exact" type="checkbox" checked="checked"></TD>
+            <TD><input type="text" value="" name="cutoff"></TD>
+            <TD><input type="text" value="" name="limit"></TD>
+            <TD><input type="text" value="" name="timeout"></TD>
+        </TR>
+    </TABLE>
+    <INPUT type="button" value="Add Row" onclick="addRowSpam('spam_settings')">
+</div>
+
+<div id="Repeat Message Settings" class="tabcontent">
+    <TABLE id="repeat_settings" width="350px" border="1">
+        <tr>
+            <TH></TH>
+            <TH>Enabled?</TH>
+            <TH>Time period (i.e 5s, 1m, etc.)</TH>
+            <TH>Message limit</TH>
+            <TH>Similarity threshold (0-1, 0.9 recommended)</TH>
+            <TH>Timeout Configuration Name</TH>
+        </tr>
+        <TR>
+            <TD><input type="button" name="button1" value="Delete" onclick="removeRow('button1')"></TD>
+            <TD><input name="enabled-checkbox[]" access="false" id="enabled-checkbox-0-repeat_settings" value="exact" type="checkbox" checked="checked"></TD>
+            <TD><input type="text" value="" name="cutoff"></TD>
+            <TD><input type="text" value="" name="limit"></TD>
+            <TD><input type="text" value="" name="threshold"></TD>
+            <TD><input type="text" value="" name="timeout"></TD>
+        </TR>
+    </TABLE>
+    <INPUT type="button" value="Add Row" onclick="addRowRepeat('repeat_settings')">
+</div>
+
+<div id="Mass Mention Settings" class="tabcontent">
+    <TABLE id="mention_settings" width="350px" border="1">
+        <tr>
+            <TH></TH>
+            <TH>Enabled?</TH>
+            <TH>Roles/Users (one per line, include #xxxx for users, role name for roles)</TH>
+            <TH>Mention limit</TH>
+            <TH>Time period (i.e 60s, 30m, etc.)</TH>
+            <TH>Timeout Configuration Name</TH>
+        </tr>
+        <TR>
+            <TD><input type="button" name="button1" value="Delete" onclick="removeRow('button1')"></TD>
+            <TD><input name="enabled-checkbox[]" access="false" id="enabled-checkbox-0-mention_settings" value="exact" type="checkbox" checked="checked"></TD>
+            <TD><textarea name="roles_area" cols="25" rows="3"></textarea></TD>
+            <TD><input type="text" value="" name="limit"></TD>
+            <TD><input type="text" value="" name="cutoff"></TD>
+            <TD><input type="text" value="" name="timeout"></TD>
+        </TR>
+    </TABLE>
+    <INPUT type="button" value="Add Row" onclick="addRowMentions('mention_settings')">
+</div>
+
+<div id="Timeout Configurations" class="tabcontent">
+    <INPUT type="button" value="Add Configuration" onclick="addConfigTable('timeout_config_div')">
+    <div id = timeout_config_div>
+    </div>
+</div>
+</body>
+</html>
