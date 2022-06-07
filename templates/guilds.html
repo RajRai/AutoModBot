@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <SCRIPT language="javascript">
+        window.onload = function() {
+            load_guilds();
+        }
+        const guilds = JSON.parse(`{{ guilds|safe }}`);
+        function load_guilds(){
+            var menu = document.getElementById('guild-names');
+            for (var i = 0; i < guilds.length; i++){
+                menu.innerHTML += `<option value="${guilds[i].name}">${guilds[i].name}</option>\n`;
+            }
+        }
+        function select_guild(){
+            const element = document.getElementById('guild-names');
+            const selected = element.options[element.selectedIndex].value
+            for (var i = 0; i < guilds.length; i++){
+                if (guilds[i].name === selected){
+                    var getUrl = window.location;
+                    var baseUrl = getUrl .protocol + "//" + getUrl.host + "/settings/" + guilds[i].id;
+                    window.location.replace(baseUrl);
+                    return;
+                }
+            }
+        }
+    </SCRIPT>
+</head>
+<body>
+<select name="guild-names" id="guild-names"></select>
+<button value="Select" onclick="select_guild()">Select Guild</button>
+</body>
+</html>

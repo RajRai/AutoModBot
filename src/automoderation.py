@@ -3,7 +3,7 @@ import discord
 import pytz
 import requests
 from discord import *
-from config.config import settings
+from config.config import settings_for_guild
 from thefuzz import fuzz
 from src.private import TOKEN
 
@@ -22,11 +22,13 @@ seconds_per_unit = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
 timeouts = {}
 
 
+
 def convert_to_seconds(s):
     return int(s[:-1]) * seconds_per_unit[s[-1]]
 
 
 def check_blacklist(message: Message) -> (bool, str):
+    settings = settings_for_guild(message.guild.id)
     for rule in settings.automod.blacklist.rules:
         for word in message.content.split() + [message.content.replace(" ", ""), message.content]:
             if rule.exact:
@@ -57,6 +59,7 @@ def check_frequency_limited(message: Message, messages, rule, out_arr, discrimin
 
 
 def check_spam(message: Message):
+    settings = settings_for_guild(message.guild.id)
     messages = queries.get_messages(message.author.id)
     for rule in settings.automod.spam.rules:
         spam = []
@@ -67,6 +70,7 @@ def check_spam(message: Message):
 
 
 def check_repeat(message: Message):
+    settings = settings_for_guild(message.guild.id)
     messages = queries.get_messages(message.author.id)
     for rule in settings.automod.repeat.rules:
         repeated = []
@@ -79,12 +83,13 @@ def check_repeat(message: Message):
 
 
 def check_mentions(message: Message):
+    settings = settings_for_guild(message.guild.id)
     if len(message.mentions) + len(message.role_mentions) > 0 or message.mention_everyone:
         return None
     messages = queries.get_mentions(message.author.id)
     for rule in settings.automod.mentions.rules:
         mentions = []
-        for role in rule.roles.content:
+        for role in rule.content:
             if (role.lower() not in message.mentions or role.lower() not in message.role_mentions
                     or (role.lower() == 'everyone' and not message.mention_everyone)):
                 return False, [], None
@@ -101,23 +106,24 @@ def check_mentions(message: Message):
     return False, []
 
 
-def get_timeout_from_name(name: str):
+def get_timeout_from_name(name: str, settings):
     for timeout in settings.automod.timeout:
         if timeout.name.lower() == name.lower():
             return timeout
 
 
-def get_timeout_duration(user, rule):
-    config = get_timeout_from_name(rule.timeout)
+def get_timeout_duration(user, rule, settings):
+    config = get_timeout_from_name(rule.timeout, settings)
     offenses = queries.get_offense_count(user)
     duration_seconds = 0
     for step in config.steps:
-        if offenses > step.offenseCount:
+        if offenses >= step.offenseCount:
             duration_seconds = convert_to_seconds(step.timeout)
     return duration_seconds
 
 
 async def log_timeout(message, duration, reason, info):
+    settings = settings_for_guild(message.guild.id)
     user = message.author
     queries.log_timeout(user.id, duration, reason, message.content)
     out = f'Handled message and timed out user {str(user)} {f"({user.nick}) " if user.nick is not None else ""}' \
@@ -145,8 +151,9 @@ async def log_timeout(message, duration, reason, info):
 
 async def give_timeout(message: Message, reason: str, info: tuple):
     await message.delete()
-    time = get_timeout_duration(message.author.id, info[2])
-    timeout = (datetime.datetime.utcnow() + datetime.timedelta(minutes=time / 60)).isoformat()
+    settings = settings_for_guild(message.guild.id)
+    time = get_timeout_duration(message.author.id, info[2], settings)
+    timeout = datetime.datetime.utcnow() + datetime.timedelta(seconds=time)
     timeouts[(message.author.id, message.guild.id)] = timeout, reason, message.content
     out = f'You were given a timeout of {int(time / 60)} minutes for the following reason: **{reason}**.\n' \
           f'Your message: {message.content}'
@@ -158,12 +165,13 @@ async def notify_timeout(message: Message):
     await message.delete()
     timeout = timeouts[message.author.id, message.guild.id]
     time = timeout[0] - datetime.datetime.utcnow()
-    out = f'You still have a timeout of {time.total_seconds / 60} minutes for the following reason: **{timeout[2]}**.\n' \
-          f'Your message: {timeout[3]}'
+    out = f'You still have a timeout of {time.total_seconds() / 60} minutes for the following reason: **{timeout[1]}**.\n' \
+          f'Your message: {timeout[2]}'
     await message.author.send(out)
 
 
 async def auto_moderate(message: Message):
+    settings = settings_for_guild(message.guild.id)
     flags = {  # Tuple(bool, whatever other information gets returned, ... )
         'blacklist': None,
         'spam': None,
@@ -171,8 +179,9 @@ async def auto_moderate(message: Message):
         'mentions': None
     }
 
-    if timeouts[(message.author.id, message.guild.id)] > datetime.datetime.utcnow():
-        await notify_timeout(message.author)
+    if (message.author.id, message.guild.id) in timeouts and timeouts[(message.author.id, message.guild.id)][0] > datetime.datetime.utcnow():
+        await notify_timeout(message)
+
 
     if settings.automod.blacklist.enabled:
         flags['blacklist'] = check_blacklist(message)

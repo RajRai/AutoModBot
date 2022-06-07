@@ -1,7 +1,7 @@
 import sqlite3
 from discord import *
 from discord.ext.commands import Context
-from config.config import DB_FILE, settings
+from config.config import DB_FILE
 import src.automoderation as automod
 
 
@@ -78,9 +78,9 @@ def store_message(message: Message):
                         '{_serialize_list(message.role_mentions)}',{1 if message.mention_everyone else 0})""")
 
 
-def prune_history(user: int):
+def prune_history(user: int, save: int):
     count = select(f"""SELECT COUNT(*) FROM MESSAGES WHERE user = {user}""")[0][0]
-    diff = count - settings.automod.saved_messages
+    diff = count - save
     if (diff <= 0):
         return
     execute(f"""DELETE FROM MESSAGES WHERE rowid IN (SELECT rowid FROM MESSAGES WHERE user = {user} LIMIT {diff} )""")

@@ -125,8 +125,7 @@
                     ]
                 }
             ]
-        },
-        "logging_channel": "automod-logging"
+        }
     },
     "default": {
         "automod": {

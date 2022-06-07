@@ -1,20 +1,33 @@
 import json
-from types import SimpleNamespace
+from argparse import Namespace
 import os
 
 script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_FILE = os.path.join(script_dir, 'data', 'dev.db')
-json_file = open(os.path.join(script_dir, 'config', 'settings.json'))
-
-# Parse JSON into an object with attributes corresponding to dict keys.
-settings = json.loads(json_file.read(), object_hook=lambda d: SimpleNamespace(**d))
+JSON_PATH = os.path.join(script_dir, 'config', 'settings.json')
+JSON_DUMP_PATH = JSON_PATH
+# JSON_DUMP_PATH = os.path.join(script_dir, 'config', 'settings_dump.json')
+json_file = open(JSON_PATH)
+settings = json.load(json_file)
+json_file.close()
 
 
 def settings_for_guild(guild: int):
-    for set in settings:
-        if set.guild == guild:
-            return set
+    global settings
+    return Namespace(**settings[str(guild)])
 
-def dump_settings():
-    with open(os.path.join(script_dir, 'config', 'settings.json'), 'w') as f:
-        json.dumps(settings, default=lambda o: o.__dict__, sort_keys=True, indent=4)
+
+def settings_for_guild_dict(guild: int):
+    global settings
+    return settings[str(guild)] if str(guild) in settings else {}
+
+
+def replace_settings_for_guild(guild: int, update: dict):
+    global settings
+    settings[str(guild)] = update
+    dump_settings(settings)
+
+
+def dump_settings(settings):
+    with open(JSON_DUMP_PATH, 'w') as f:
+        json.dump(settings, f, sort_keys=True, indent=4)

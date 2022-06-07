@@ -2,14 +2,14 @@ import sys
 import discord
 from discord import *
 from discord.ext import commands
-from quart_discord import DiscordOAuth2Session
 from src.private import TOKEN
 import src.queries as qr
 from src.automoderation import auto_moderate
+from config.config import settings_for_guild
 
 prefix = qr.prefix
 
-intents = discord.Intents.default()
+intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=prefix, intents=intents)
 
 
@@ -23,6 +23,12 @@ def is_server_manager(ctx):
 
 def is_bot_manager(ctx):
     return is_dev(ctx) or is_server_manager(ctx)
+
+
+@bot.command(name='guilds')
+@commands.check(is_dev)
+async def guilds(ctx, *words):
+    await ctx.reply(" ".join([str(g.id) for g in bot.guilds]))
 
 
 @bot.command(name='disable', help="Disables the bot's automoderation features")
@@ -53,17 +59,19 @@ async def idlestatus(ctx, *words):
 
 async def update_message_history(message: Message):
     qr.store_message(message)
-    qr.prune_history(message.author.id)
+    qr.prune_history(message.author.id, settings_for_guild(message.guild.id).automod.saved_messages)
 
 
 @bot.event
 async def on_guild_join(guild: Guild):
     qr.initialize_settings(guild.id)
 
+
 @bot.event
 async def on_ready():
     for guild in bot.guilds:
         qr.initialize_settings(guild.id)
+
 
 @bot.event
 async def on_message(message: Message):
@@ -71,7 +79,7 @@ async def on_message(message: Message):
         return
     await bot.wait_until_ready()
     await bot.process_commands(message)
-    if qr.is_enabled(message) and not message.author.top_role.permissions.moderate_members:
+    if qr.is_enabled(message) and not message.author.top_role.permissions.administrator:
         await auto_moderate(message)
     await update_message_history(message)
 
@@ -96,6 +104,11 @@ def parse_mode():
     except Exception as err:
         print(str(err))
 
+
 def main():
     parse_mode()
     bot.run(TOKEN)
+
+
+if __name__ == "__main__":
+    main()
