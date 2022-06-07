@@ -9,18 +9,15 @@
     "saved_messages": 100,
     "blacklist": {
       "enabled": true,
-      "rules": [],
-      "timeouts": []
+      "rules": []
     },
     "mentions": {
       "enabled": true,
-      "rules": [],
-      "timeouts": []
+      "rules": []
     },
     "spam": {
       "enabled": true,
-      "rules": [],
-      "timeouts": []
+      "rules": []
     },
     "repeat": {
       "enabled": true,
@@ -28,10 +25,29 @@
         {
           "cutoff": "3d",
           "limit": 2,
-          "threshold": 0.9
+          "threshold": 0.9,
+          "timeout": "ExampleConfig1"
         }
-      ],
-      "timeouts": []
-    }
+      ]
+    },
+    "timeout": [
+      {
+        "name": "ExampleConfig1",
+        "steps": [
+          {
+            "offenseCounter": 1,
+            "timeout": "1m"
+          },
+          {
+            "offenseCounter": 3,
+            "timeout": "5m"
+          },
+          {
+            "offenseCounter":  5,
+            "timeout": "30m"
+          }
+        ]
+      }
+    ]
   }
 }

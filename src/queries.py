@@ -48,12 +48,21 @@ def prefix(bot, message):
     return result[0][1] if len(result) > 0 else None
 
 
+def log_timeout(user: int, duration: int, reason: str, message: str):
+    execute(f"""INSERT INTO TIMEOUTS (user, duration, reason, message)
+                VALUES ({user}, {duration}, {reason}, {message})""")
+
+
+def get_offense_count(user: int):
+    return select(f"""SELECT COUNT(*) FROM TIMEOUTS WHERE user = {user}""")[0][0]
+
+
 def get_messages(user: int):
     rows = select(f"""SELECT message, time FROM MESSAGES WHERE user = {user}""")
     return list(rows)
 
 def get_mentions(user: int):
-    return list(select(f"""SELECT user_mentions, role_mentions, mentions_everyone FROM MESSAGES 
+    return list(select(f"""SELECT user_mentions, role_mentions, mentions_everyone, message, time FROM MESSAGES 
                            WHERE user = {id} 
                            AND (user_mentions != '' OR role_mentions != '' OR mentions_everyone != 0) """))
 
