@@ -2,7 +2,7 @@ import sqlite3
 from discord import *
 from discord.ext.commands import Context
 from config.config import DB_FILE, settings
-import automoderation
+import src.automoderation as automod
 
 
 def _serialize_list(list):
@@ -38,6 +38,11 @@ def execute(query):
     conn.close()
 
 
+def initialize_settings(guild: int):
+    execute(f"""INSERT INTO SETTINGS (guild) VALUES ({guild})
+                ON CONFLICT DO NOTHING""")
+
+
 def get_setting(columns, guild: int):
     return select(f"""SELECT {columns} FROM SETTINGS WHERE guild = {guild}""")
 
@@ -45,12 +50,12 @@ def get_setting(columns, guild: int):
 def prefix(bot, message):
     id = message.guild.id
     result = get_setting("guild, prefix", id)
-    return result[0][1] if len(result) > 0 else None
+    return result[0][1] if len(result) > 0 else '!'
 
 
 def log_timeout(user: int, duration: int, reason: str, message: str):
     execute(f"""INSERT INTO TIMEOUTS (user, duration, reason, message)
-                VALUES ({user}, {duration}, {reason}, {message})""")
+                VALUES ({user}, {duration}, '{reason}', '{message}')""")
 
 
 def get_offense_count(user: int):
@@ -63,19 +68,21 @@ def get_messages(user: int):
 
 def get_mentions(user: int):
     return list(select(f"""SELECT user_mentions, role_mentions, mentions_everyone, message, time FROM MESSAGES 
-                           WHERE user = {id} 
+                           WHERE user = {user} 
                            AND (user_mentions != '' OR role_mentions != '' OR mentions_everyone != 0) """))
 
 
 def store_message(message: Message):
     execute(f"""INSERT INTO MESSAGES (user, message, user_mentions, role_mentions, mentions_everyone) 
-                VALUES ({message.author.id},{message.content},{_serialize_list(message.mentions)},
-                        {_serialize_list(message.role_mentions)},{1 if message.mention_everyone else 0})""")
+                VALUES ({message.author.id},'{message.content}','{_serialize_list(message.mentions)}',
+                        '{_serialize_list(message.role_mentions)}',{1 if message.mention_everyone else 0})""")
 
 
 def prune_history(user: int):
     count = select(f"""SELECT COUNT(*) FROM MESSAGES WHERE user = {user}""")[0][0]
     diff = count - settings.automod.saved_messages
+    if (diff <= 0):
+        return
     execute(f"""DELETE FROM MESSAGES WHERE rowid IN (SELECT rowid FROM MESSAGES WHERE user = {user} LIMIT {diff} )""")
 
 
@@ -88,4 +95,4 @@ def set_enabled(ctx: Context, value: bool):
 
 
 if __name__ == "__main__":
-    print(automoderation.check_repeated("test"))
+    print(automod.check_repeated("test"))

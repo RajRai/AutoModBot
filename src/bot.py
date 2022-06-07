@@ -4,9 +4,11 @@ from discord import *
 from discord.ext import commands
 from quart import Quart, render_template, request, session, redirect, url_for
 from quart_discord import DiscordOAuth2Session
-from private import SECRET_KEY, CLIENT_ID, CLIENT_SECRET, TOKEN
-from queries import prefix, store_message, prune_history, is_enabled, set_enabled
-from automoderation import auto_moderate
+from src.private import SECRET_KEY, CLIENT_ID, CLIENT_SECRET, TOKEN
+import src.queries as qr
+from src.automoderation import auto_moderate
+
+prefix = qr.prefix
 
 app = Quart(__name__)
 
@@ -16,7 +18,8 @@ app.config["DISCORD_CLIENT_SECRET"] = CLIENT_SECRET  # Discord client secret.
 app.config["DISCORD_REDIRECT_URI"] = "http://github.com"
 
 discordOAuth = DiscordOAuth2Session(app)
-bot = commands.Bot(command_prefix=prefix)
+intents = discord.Intents.default()
+bot = commands.Bot(command_prefix=prefix, intents=intents)
 
 
 def is_dev(ctx):
@@ -34,13 +37,13 @@ def is_bot_manager(ctx):
 @bot.command(name='disable', help="Disables the bot's automoderation features")
 @commands.check(is_bot_manager)
 async def disable(ctx, *words):
-    set_enabled(ctx, False)
+    qr.set_enabled(ctx, False)
 
 
 @bot.command(name='enable', help="Enables the bot's automoderation features")
 @commands.check(is_bot_manager)
 async def enable(ctx, *words):
-    set_enabled(ctx, True)
+    qr.set_enabled(ctx, True)
 
 
 @bot.command(name='status', help="Sets the bot's status text, with an online status")
@@ -58,15 +61,26 @@ async def idlestatus(ctx, *words):
 
 
 async def update_message_history(message: Message):
-    store_message(message)
-    prune_history(message.author.id)
+    qr.store_message(message)
+    qr.prune_history(message.author.id)
 
 
 @bot.event
+async def on_guild_join(guild: Guild):
+    qr.initialize_settings(guild.id)
+
+@bot.event
+async def on_ready():
+    for guild in bot.guilds:
+        qr.initialize_settings(guild.id)
+
+@bot.event
 async def on_message(message: Message):
+    if message.author.bot:
+        return
     await bot.wait_until_ready()
     await bot.process_commands(message)
-    if is_enabled(message):
+    if qr.is_enabled(message) and not message.author.top_role.permissions.moderate_members:
         await auto_moderate(message)
     await update_message_history(message)
 
