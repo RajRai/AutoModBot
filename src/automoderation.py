@@ -29,6 +29,8 @@ def convert_to_seconds(s):
 def check_blacklist(message: Message) -> (bool, str):
     settings = settings_for_guild(message.guild.id)
     for rule in settings.automod.blacklist.rules:
+        if not rule.enabled:
+            continue
         for word in message.content.split() + [message.content.replace(" ", ""), message.content]:
             if rule.exact:
                 if rule.content.lower() == word.lower() or rule.content.lower() in word.lower():
@@ -61,6 +63,8 @@ def check_spam(message: Message):
     settings = settings_for_guild(message.guild.id)
     messages = queries.get_messages(message.author.id)
     for rule in settings.automod.spam.rules:
+        if not rule.enabled:
+            continue
         if rule.limit is None:
             continue
         spam = []
@@ -74,6 +78,8 @@ def check_repeat(message: Message):
     settings = settings_for_guild(message.guild.id)
     messages = queries.get_messages(message.author.id)
     for rule in settings.automod.repeat.rules:
+        if not rule.enabled:
+            continue
         repeated = []
         result = check_frequency_limited(message, messages, rule, repeated,
                                          discriminant=lambda s1, s2: fuzz.ratio(s1[0].lower(),
@@ -89,6 +95,8 @@ def check_mentions(message: Message):
         return None
     messages = queries.get_mentions(message.author.id)
     for rule in settings.automod.mentions.rules:
+        if not rule.enabled:
+            continue
         mentions = []
         for role in rule.content:
             if (role.lower() not in message.mentions or role.lower() not in message.role_mentions
@@ -109,12 +117,16 @@ def check_mentions(message: Message):
 
 def get_timeout_from_name(name: str, settings):
     for timeout in settings.automod.timeout:
+        if not timeout.enabled:
+            continue
         if timeout.name.lower() == name.lower():
             return timeout
 
 
 def get_timeout_duration(user, rule, settings):
     config = get_timeout_from_name(rule.timeout, settings)
+    if config is None:
+        return 0
     offenses = queries.get_offenses(user)
     duration_seconds = 0
     for step in config.steps:
@@ -184,6 +196,8 @@ async def give_timeout(message: Message, reason: str, info: tuple):
     await message.delete()
     settings = settings_for_guild(message.guild.id)
     time = get_timeout_duration(message.author.id, info[2], settings)
+    if time == 0:
+        return
     if time == 'ban':
         await give_ban(message, reason, info)
     timeout = datetime.datetime.utcnow() + datetime.timedelta(seconds=time)

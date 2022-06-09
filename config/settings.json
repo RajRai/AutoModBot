@@ -126,7 +126,30 @@
                 }
             ]
         },
-        "logging_channel": "automod-logging"
+        "helper": {
+            "enabled": true,
+            "rules": [
+                {
+                    "enabled": true,
+                    "exact": true,
+                    "reply": "hello",
+                    "search": "help me please",
+                    "threshold": 0.9
+                }
+            ]
+        },
+        "logging": {
+            "bans": true,
+            "deletes": true,
+            "help_replies": true,
+            "logging_channel": "automod-logging",
+            "settings_changes": true,
+            "timeouts": true
+        },
+        "manager_role": [
+            "test role",
+            "@manage_guild"
+        ]
     },
     "default": {
         "automod": {

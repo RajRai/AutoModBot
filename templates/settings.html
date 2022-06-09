@@ -19,6 +19,7 @@
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#GeneralSettings">Bot Settings</a></li>
             <li><a data-toggle="tab" href="#AutomodTab">Automod Settings</a></li>
+            <li><a data-toggle="tab" href="#HelperTab">Helper Settings</a></li>
             <li><a data-toggle="tab" href="#LoggingTab">Logging Settings</a></li>
         </ul>
         <div class="tab-content">
@@ -155,6 +156,28 @@
                         </div>
                     </div>
                 </div>
+            </div>
+            <div id="HelperTab" class="tab-pane fade">
+                <label for="helper_enabled">Auto Helper Enabled:</label>
+                <input name="profanity-checkbox[]" id="helper_enabled" type="checkbox">
+                <TABLE id="helper_settings" width="350px" border="1">
+                    <tr>
+                        <TH></TH>
+                        <TH>Enabled?</TH>
+                        <TH>Search Text</TH>
+                        <TH>Exact match?</TH>
+                        <TH>Similarity threshold (0-1, 0.9 recommended)</TH>
+                        <TH>Response Text</TH>
+                    </tr>
+                    <TR>
+                        <TD><input type="button" name="button1" value="Delete" onclick="removeRow('button1')"></TD>
+                        <TD><input name="enabled-checkbox[]" id="enabled-checkbox-0-helper_settings" type="checkbox" checked="checked"></TD>
+                        <TD><textarea name="helper_search_text" cols="60" rows="5"></textarea></TD>
+                        <TD><input name="exact-checkbox[]" id="exact-checkbox-0-helper_settings" type="checkbox"></TD>
+                        <TD><input type="text" value="" name="threshold"></TD>
+                        <TD><textarea name="helper_response_text" cols="60" rows="5"></textarea></TD>
+                    </TR>
+                </TABLE>
             </div>
             <div id="LoggingTab" class="tab-pane fade">
                 <label for="message_count_input">Logging channel name (don't include #):</label>

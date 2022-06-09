@@ -1,7 +1,11 @@
+import json
 import sys
 import discord
+import requests
 from discord import *
 from discord.ext import commands
+
+from src.autohelper import check_helper
 from src.private import TOKEN
 import src.queries as qr
 from src.automoderation import auto_moderate
@@ -76,21 +80,7 @@ async def on_ready():
 
 
 @bot.event
-async def on_socket_event_type(event_type):  # Really just a hack until I can get Quart/Pycord threads to cooperate
-    for guild_id in logging_queue:
-        settings = settings_for_guild(guild_id)
-        for guild in bot.guilds:
-            if guild.id != guild_id:
-                continue
-            ch = discord.utils.get(guild.text_channels, name=settings.logging.logging_channel)
-            for msg in logging_queue:
-                await ch.send(msg)
-        logging_queue[guild_id] = []
-
-
-@bot.event
 async def on_message(message: Message):
-    global logging_queue
     if message.author.bot:
         return
     await bot.wait_until_ready()
@@ -98,7 +88,7 @@ async def on_message(message: Message):
     if qr.is_enabled(message) and not message.author.top_role.permissions.administrator:
         await auto_moderate(message)
     await update_message_history(message)
-
+    await check_helper(message)
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -110,16 +100,21 @@ async def on_command_error(ctx, error):
         await ctx.reply("An unspecified error occurred")
 
 
-async def log_setting_change(guild_id: int, user: User):
-    for guild in bot.guilds:
-        if guild.id == guild_id:
-            settings = settings_for_guild(guild_id)
-            member = guild.get_member(user.id)
-            for channel in guild.channels:
-                if channel.name.lower() == settings.logging.logging_channel:
-                    if logging_queue[guild_id] is None:
-                        logging_queue[guild_id] = []
-                    logging_queue[guild_id].append(f'Settings changed via web UI by user: ' + member.mention)
+async def log_setting_change(guild_id: int, user: User):  # Thanks Quart
+    headers = {
+        'Authorization': f'Bot {TOKEN}'
+    }
+    settings = settings_for_guild(guild_id)
+    channels = json.loads(json.dumps(requests.get(f'https://discord.com/api/v10/guilds/{guild_id}/channels', headers=headers).json()))
+    for channel in channels:
+        if channel['name'] == settings.logging.logging_channel:
+            member = None
+            for guild in bot.guilds:
+                if guild_id == guild.id:
+                    member = guild.get_member(user.id)
+            if member is not None:
+                data = {'content': f'Settings changed via web UI by user: ' + member.mention}
+                requests.post(f'https://discord.com/api/v10/channels/{channel["id"]}/messages', data=data, headers=headers).json()
 
 
 def parse_mode():

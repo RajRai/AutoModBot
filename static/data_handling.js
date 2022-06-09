@@ -118,6 +118,26 @@ function dump_settings(){
         jsonArr.push(jsonObj2);
     }
     automod.timeout = jsonArr;
+    jsonArr = [];
+
+    let helper = {}
+    checkbox = document.getElementById('helper_enabled');
+    helper.enabled = checkbox.checked;
+    table = document.getElementById('helper_settings');
+    for(i = 1; i < table.rows.length; i++){
+        let row = table.rows[i];
+        let col = row.cells;
+        let jsonObj = {
+            enabled : col[1].firstChild.checked,
+            search : col[2].firstChild.value,
+            exact : col[3].firstChild.checked,
+            threshold : parseFloat(col[4].firstChild.value),
+            reply : col[5].firstChild.value
+        }
+        jsonArr.push(jsonObj);
+    }
+    helper.rules = jsonArr
+    jsonArr = [];
 
     let logging = {}
     logging.logging_channel = document.getElementById('logging_channel_input').value;
@@ -134,8 +154,10 @@ function dump_settings(){
 
     automod.saved_messages = parseInt(document.getElementById('message_count_input').value);
     automod.enabled = document.getElementById('automod_enabled').checked;
+
     var settings = {
         automod: automod,
+        helper: helper,
         logging: logging
     };
 
@@ -276,12 +298,28 @@ function load_settings(json){
     } catch (e) {}
 
     try {
-        console.log(json);
         document.getElementById('log_bans').checked = json.logging.bans;
         document.getElementById('log_deletes').checked = json.logging.deletes;
         document.getElementById('log_timeouts').checked = json.logging.timeouts;
         document.getElementById('log_help_replies').checked = json.logging.help_replies;
         document.getElementById('log_settings_changes').checked = json.logging.settings_changes;
+    } catch (e) {}
+
+    try {
+        table = document.getElementById('helper_settings');
+        let checkbox = document.getElementById('helper_enabled');
+        checkbox.checked = json.helper.enabled;
+        for (i = 0; i < json.helper.rules.length; i++) {
+            if (i > 0) addRowHelper('repeat_settings');
+            rule = json.helper.rules[i];
+            row = table.rows[i + 1];
+            col = row.cells;
+            col[1].firstChild.checked = rule.checked;
+            col[2].firstChild.value = rule.search;
+            col[3].firstChild.checked = rule.exact;
+            col[4].firstChild.value = rule.threshold;
+            col[5].firstChild.value = rule.reply;
+        }
     } catch (e) {}
 
     return json;

@@ -1,14 +1,11 @@
-import asyncio
 import json
 import threading
 
-import discord
 from quart_discord import DiscordOAuth2Session
 from src.bot import main, main_async, bot, log_setting_change
 from quart import Quart, render_template, request, session, redirect, url_for
-from src.private import SECRET_KEY, CLIENT_ID, CLIENT_SECRET
+from src.private import SECRET_KEY, CLIENT_ID, CLIENT_SECRET, TOKEN
 import config.config as config
-from multiprocessing import process
 
 app = Quart(__name__)
 
