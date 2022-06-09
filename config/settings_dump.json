@@ -125,7 +125,12 @@
                     ]
                 }
             ]
-        }
+        },
+        "logging_channel": "automod-logging",
+        "manager_role": [
+            "@manage_guild",
+            "test role"
+        ]
     },
     "default": {
         "automod": {

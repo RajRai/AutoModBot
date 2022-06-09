@@ -98,7 +98,6 @@ function dump_settings(){
     let tables = document.getElementById('timeout_config_div').getElementsByTagName('TABLE');
     for (i=0; i < tables.length; i++){
         table = tables[i];
-        console.log(table);
         let name = document.getElementById('name_' + table.id);
         let jsonArr2 = [];
         for(let j = 1; j < table.rows.length; j++){
@@ -127,6 +126,7 @@ function dump_settings(){
     };
 
     settings.logging_channel = document.getElementById('logging_channel_input').value;
+    settings.manager_role = document.getElementById('manager_role_input').value.split("\n");
 
     let result = document.getElementById('result_label');
 
@@ -164,7 +164,7 @@ function load_settings(json){
     try {
         var table = document.getElementById('profanity_settings')
         let checkbox = document.getElementById('profanity_enabled');
-        checkbox.checked = automod.blacklist.enabled;
+        checkbox.checked = json.automod.blacklist.enabled;
 
         for (var i = 0; i < json.automod.blacklist.rules.length; i++) {
             if (i > 0) addRowProfanity('profanity_settings');
@@ -198,7 +198,7 @@ function load_settings(json){
     try {
         table = document.getElementById('repeat_settings');
         let checkbox = document.getElementById('repeat_enabled');
-        checkbox.checked = automod.repeat.enabled;
+        checkbox.checked = json.automod.repeat.enabled;
         for (i = 0; i < json.automod.repeat.rules.length; i++) {
             if (i > 0) addRowRepeat('repeat_settings');
             rule = json.automod.repeat.rules[i];
@@ -215,7 +215,7 @@ function load_settings(json){
     try {
         table = document.getElementById('mention_settings');
         let checkbox = document.getElementById('mention_enabled');
-        checkbox.checked = automod.mentions.enabled;
+        checkbox.checked = json.automod.mentions.enabled;
         for (i = 0; i < json.automod.mentions.rules.length; i++) {
             if (i > 0) addRowMentions('repeat_settings');
             rule = json.automod.mentions.rules[i];
@@ -259,6 +259,7 @@ function load_settings(json){
         document.getElementById('message_count_input').value = json.automod.saved_messages;
         document.getElementById('automod_enabled').checked = json.automod.enabled;
         document.getElementById('logging_channel_input').value = json.logging_channel;
+        document.getElementById('manager_role_input').value = json.manager_role.join("\n");
     } catch (e) {}
 
     return json;

@@ -22,11 +22,25 @@ async def verify_authorized(guild_id):
     await bot.wait_until_ready()
     glds = bot.guilds
     user = await discordOAuth.fetch_user()
+
+    settings = config.settings_for_guild(guild_id)
+
     for guild in glds:
         member = guild.get_member(user.id)
         if guild.id == guild_id and member is not None:
             if member.top_role.permissions.administrator:
                 return True
+            for role in settings.manager_role:
+                if role == '':
+                    continue
+                if role[0] == '@':  # Signals that we should use the permissions attribute
+                    try:
+                        if getattr(member.top_role.permissions, role[1:].lower()):
+                            return True
+                    except Exception:
+                        pass
+                elif role.lower() in [r.name.lower() for r in member.roles]:
+                    return True
     return False
 
 
@@ -51,13 +65,10 @@ async def guilds():
         return redirect(url_for('login'))
     await bot.wait_until_ready()
     glds = bot.guilds
-    user = await discordOAuth.fetch_user()
     managing = []
     for guild in glds:
-        member = guild.get_member(user.id)
-        if member is not None:
-            if member.top_role.permissions.administrator:
-                managing.append({'name': guild.name, 'id': str(guild.id)})
+        if await verify_authorized(guild.id):
+            managing.append({'name': guild.name, 'id': str(guild.id)})
     return await render_template('guilds.html', guilds=json.dumps(managing))
 
 
