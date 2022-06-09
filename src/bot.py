@@ -103,15 +103,18 @@ async def update_message_history(message: Message):
 
 @bot.event
 async def on_message(message: Message):
-    if message.author.bot:
-        return
-    await bot.wait_until_ready()
-    await bot.process_commands(message)
-    settings = config.settings_for_guild(message.guild.id)
-    if settings.enabled and not message.author.top_role.permissions.administrator:
-        await auto_moderate(message)
-        await update_message_history(message)
-        await check_helper(message)
+    try:
+        if message.author.bot:
+            return
+        await bot.wait_until_ready()
+        await bot.process_commands(message)
+        settings = config.settings_for_guild(message.guild.id)
+        if settings.enabled and not message.author.top_role.permissions.administrator:
+            await auto_moderate(message)
+            await update_message_history(message)
+            await check_helper(message)
+    except Exception:
+        pass
 
 
 @bot.event

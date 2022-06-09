@@ -29,7 +29,7 @@ async def verify_authorized(guild_id):
         if guild.id == guild_id and member is not None:
             if member.top_role.permissions.administrator:
                 return True
-            if 'manager_role' not in settings:
+            if settings is None or 'manager_role' not in settings:
                 return False
             for role in settings['manager_role']:
                 if role == '':

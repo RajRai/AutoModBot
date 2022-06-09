@@ -14,17 +14,21 @@ json_file.close()
 
 
 def prefix(bot, message):
-    return settings[str(message.guild.id)]['prefix']
+    if str(message.guild.id) in settings:
+        return settings[str(message.guild.id)]['prefix']
+    return '!'
 
 
 def settings_for_guild(guild: int):
     global settings
-    return AttrDict(settings[str(guild)])
+    if str(guild) in settings:
+        return AttrDict(settings[str(guild)])
 
 
 def settings_for_guild_dict(guild: int):
     global settings
-    return settings[str(guild)] if str(guild) in settings else {}
+    if str(guild) in settings:
+        return settings[str(guild)] if str(guild) in settings else {}
 
 
 def replace_settings_for_guild(guild: int, update: dict):

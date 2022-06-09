@@ -10,3 +10,4 @@
 /AutoMod.iml
 /src/private.py
 /automod/ # Python virtualenv
+/automod/
