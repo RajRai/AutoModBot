@@ -14,8 +14,8 @@
 
     <body>
         <div id="debug"></div>
-        <INPUT type="button" value="Save" id="save_button" onclick="dump_settings()">
         <LABEL for="save_button" id="result_label"></LABEL>
+        <INPUT type="button" value="Save" id="save_button" onclick="dump_settings()">
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#GeneralSettings">Bot Settings</a></li>
             <li><a data-toggle="tab" href="#AutomodTab">Automod Settings</a></li>
@@ -24,6 +24,12 @@
         </ul>
         <div class="tab-content">
             <div id="GeneralSettings" class="tab-pane fade in active">
+                <label for="bot_enabled">Bot Enabled:</label>
+                <input name="automod-checkbox[]" id="bot_enabled" type="checkbox">
+                <br>
+                <LABEL for="prefix_input" id="prefix_label">Commands prefix:</LABEL>
+                <INPUT type="text" id="prefix_input">
+                <br>
                 <label for="manager_role_input">Role to manage the bot:</label>
                 <textarea id="manager_role_input" cols="25" rows="3"></textarea>
                 <p>

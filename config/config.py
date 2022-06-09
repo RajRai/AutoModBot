@@ -13,6 +13,10 @@ settings = json.load(json_file)
 json_file.close()
 
 
+def prefix(bot, message):
+    return settings[str(message.guild.id)]['prefix']
+
+
 def settings_for_guild(guild: int):
     global settings
     return AttrDict(settings[str(guild)])

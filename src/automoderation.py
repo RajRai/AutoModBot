@@ -29,7 +29,7 @@ def convert_to_seconds(s):
 def check_blacklist(message: Message) -> (bool, str):
     settings = settings_for_guild(message.guild.id)
     for rule in settings.automod.blacklist.rules:
-        if not rule.enabled:
+        if not rule.enabled or rule.threshold is None or rule.content == '':
             continue
         for word in message.content.split() + [message.content.replace(" ", ""), message.content]:
             if rule.exact:
@@ -63,9 +63,7 @@ def check_spam(message: Message):
     settings = settings_for_guild(message.guild.id)
     messages = queries.get_messages(message.author.id)
     for rule in settings.automod.spam.rules:
-        if not rule.enabled:
-            continue
-        if rule.limit is None:
+        if not rule.enabled or rule.limit is None:
             continue
         spam = []
         result = check_frequency_limited(message, messages, rule, spam, discriminant=lambda x, y: True)
@@ -78,7 +76,7 @@ def check_repeat(message: Message):
     settings = settings_for_guild(message.guild.id)
     messages = queries.get_messages(message.author.id)
     for rule in settings.automod.repeat.rules:
-        if not rule.enabled:
+        if not rule.enabled or rule.limit is None or rule.threshold is None or rule.cutoff is None:
             continue
         repeated = []
         result = check_frequency_limited(message, messages, rule, repeated,
@@ -117,8 +115,6 @@ def check_mentions(message: Message):
 
 def get_timeout_from_name(name: str, settings):
     for timeout in settings.automod.timeout:
-        if not timeout.enabled:
-            continue
         if timeout.name.lower() == name.lower():
             return timeout
 
@@ -126,14 +122,23 @@ def get_timeout_from_name(name: str, settings):
 def get_timeout_duration(user, rule, settings):
     config = get_timeout_from_name(rule.timeout, settings)
     if config is None:
-        return 0
-    offenses = queries.get_offenses(user)
+        return -1
+    offenses_t = queries.get_offenses(user)
     duration_seconds = 0
     for step in config.steps:
-        if len(offenses) >= step.offenseCount:
-            if step.timeout == 'ban':
-                return 'ban'
-            duration_seconds = convert_to_seconds(step.timeout)
+        try:
+            offenses = []
+            cutoff = datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(
+                seconds=convert_to_seconds(step.cutoff))
+            for offense in offenses_t:
+                if pytz.UTC.localize(datetime.datetime.strptime(offense[0][:-4], '%Y-%m-%d %H:%M:%S')) > cutoff:
+                    offenses.append(offense)
+            if len(offenses) >= int(step.offenseCount):
+                if step.timeout == 'ban':
+                    return 'ban'
+                duration_seconds = convert_to_seconds(step.timeout)
+        except Exception as e:
+            pass
     return duration_seconds
 
 
@@ -141,27 +146,28 @@ async def log_timeout(message, duration, reason, info):
     settings = settings_for_guild(message.guild.id)
     user = message.author
     queries.log_timeout(user.id, duration, reason, message.content)
-    out = f'Deleted message and timed out user {user.mention}' \
-          f'with duration {duration / 60:.2f}m for reason: **{reason}**.\n' \
-          f'Message: {message.content}\n' \
-          f'Time: {datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%f")}\n' \
-          f'Info: \n'
-    if reason == 'profanity':
-        out += f'```Blacklist entry: {info[2].content}\n' \
-               f'Message: {message.content}\n' \
-               f'{info[1]}```'
-    elif reason == 'spam' or reason == 'repeated messages':
-        out += '```'
-        for msg in info[1]:
-            out += f'{msg[1]} - {msg[0]}\n'
-        out += '```'
-    elif reason == 'mass-mentions':
-        out += '```'
-        for msg in info[1]:
-            out += f'{msg[4]} - {msg[3]}\n'
-        out += '```'
-    ch = discord.utils.get(message.guild.text_channels, name=settings.logging.logging_channel)
-    await ch.send(out)
+    if settings.logging.timeouts and duration > 0 or settings.logging.deletes:
+        out = f'Deleted message and timed out user {user.mention}' \
+              f'with duration {duration / 60:.2f}m for reason: **{reason}**.\n' \
+              f'Message: {message.content}\n' \
+              f'Time: {datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%f")}\n' \
+              f'Info: \n'
+        if reason == 'profanity':
+            out += f'```Blacklist entry: {info[2].content}\n' \
+                   f'Message: {message.content}\n' \
+                   f'{info[1]}```'
+        elif reason == 'spam' or reason == 'repeated messages':
+            out += '```'
+            for msg in info[1]:
+                out += f'{msg[1]} - {msg[0]}\n'
+            out += '```'
+        elif reason == 'mass-mentions':
+            out += '```'
+            for msg in info[1]:
+                out += f'{msg[4]} - {msg[3]}\n'
+            out += '```'
+        ch = discord.utils.get(message.guild.text_channels, name=settings.logging.logging_channel)
+        await ch.send(out)
 
 
 async def give_ban(message: Message, reason: str, info: tuple):
@@ -190,23 +196,25 @@ async def give_ban(message: Message, reason: str, info: tuple):
         ch = discord.utils.get(message.guild.text_channels, name=settings.logging.logging_channel)
         await ch.send(f'{message.author.mention} was' + out)
     await message.author.send('You were' + out)
+    await message.author.ban()
 
 
 async def give_timeout(message: Message, reason: str, info: tuple):
     await message.delete()
     settings = settings_for_guild(message.guild.id)
     time = get_timeout_duration(message.author.id, info[2], settings)
-    if time == 0:
-        return
     if time == 'ban':
         await give_ban(message, reason, info)
+        return
+    if time < 0:
+        return
     timeout = datetime.datetime.utcnow() + datetime.timedelta(seconds=time)
     timeouts[(message.author.id, message.guild.id)] = timeout, reason, message.content
-    if settings.logging.deletes or settings.logging.timeouts:
-        await log_timeout(message, time, reason, info)
-    out = f'You were given a timeout of {time / 60:.2f} minutes for the following reason: **{reason}**.\n' \
-          f'Your message: {message.content}'
-    await message.author.send(out)
+    await log_timeout(message, time, reason, info)
+    if time > 0:
+        out = f'You were given a timeout of {time / 60:.2f} minutes for the following reason: **{reason}**.\n' \
+              f'Your message: {message.content}'
+        await message.author.send(out)
 
 
 async def notify_timeout(message: Message):
@@ -217,7 +225,7 @@ async def notify_timeout(message: Message):
     if settings.logging.deletes:
         out = f'Deleted message by {message.author.mention} due to ongoing timeout.\n' \
               f'Message: {message.content}\n' \
-              f'Timeout remaining: {time.total_seconds / 60:.2f} minutes remaining'
+              f'Timeout remaining: {time.total_seconds() / 60:.2f} minutes remaining'
         ch = discord.utils.get(message.guild.text_channels, name=settings.logging.logging_channel)
         await ch.send(out)
     out = f'You still have a timeout of {time.total_seconds() / 60:.2f} minutes for the following reason: **{timeout[1]}**.\n' \
@@ -227,6 +235,10 @@ async def notify_timeout(message: Message):
 
 async def auto_moderate(message: Message):
     settings = settings_for_guild(message.guild.id)
+
+    if not settings.automod.enabled:
+        return
+
     flags = {  # Tuple(bool, whatever other information gets returned, ... )
         'blacklist': None,
         'spam': None,
@@ -255,3 +267,8 @@ async def auto_moderate(message: Message):
         await give_timeout(message, 'spam', flags['spam'])
     if flags['mentions'][0]:
         await give_timeout(message, 'mass-mentions', flags['mentions'])
+
+
+def lift_timeout(user_id, guild_id):
+    if (user_id, guild_id) in timeouts:
+        del (timeouts[user_id, guild_id])

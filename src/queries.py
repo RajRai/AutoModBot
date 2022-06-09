@@ -38,28 +38,13 @@ def execute(query):
     conn.close()
 
 
-def initialize_settings(guild: int):
-    execute(f"""INSERT INTO SETTINGS (guild) VALUES ({guild})
-                ON CONFLICT DO NOTHING""")
-
-
-def get_setting(columns, guild: int):
-    return select(f"""SELECT {columns} FROM SETTINGS WHERE guild = {guild}""")
-
-
-def prefix(bot, message):
-    id = message.guild.id
-    result = get_setting("guild, prefix", id)
-    return result[0][1] if len(result) > 0 else '!'
-
-
 def log_timeout(user: int, duration: int, reason: str, message: str):
     execute(f"""INSERT INTO TIMEOUTS (user, duration, reason, message)
                 VALUES ({user}, {duration}, '{reason}', '{message}')""")
 
 
 def get_offenses(user: int):
-    return select(f"""SELECT * FROM TIMEOUTS WHERE user = {user}""")[0][0]
+    return select(f"""SELECT * FROM TIMEOUTS WHERE user = {user}""")
 
 
 def get_messages(user: int):
@@ -84,10 +69,6 @@ def prune_history(user: int, save: int):
     if (diff <= 0):
         return
     execute(f"""DELETE FROM MESSAGES WHERE rowid IN (SELECT rowid FROM MESSAGES WHERE user = {user} LIMIT {diff} )""")
-
-
-def is_enabled(message: Message):
-    return get_setting("enabled", message.guild.id)[0][0] == 1
 
 
 def set_enabled(ctx: Context, value: bool):

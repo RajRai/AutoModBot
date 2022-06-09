@@ -17,8 +17,10 @@ async def log_helper(message, info, rule):
 
 async def check_helper(message: Message) -> (bool, str):
     settings = settings_for_guild(message.guild.id)
+    if not settings.helper.enabled:
+        return
     for rule in settings.helper.rules:
-        if not rule.enabled:
+        if not rule.enabled or rule.search is None or rule.threshold is None or rule.reply is None:
             continue
         ratio = fuzz.ratio(rule.search.lower(), message.content.lower())
         if ratio >= rule.threshold * 100:

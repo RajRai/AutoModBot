@@ -6,10 +6,10 @@
                 "rules": [
                     {
                         "content": "pandas",
-                        "enabled": false,
-                        "exact": false,
-                        "threshold": 0.9,
-                        "timeout": "ExampleConfig2"
+                        "enabled": true,
+                        "exact": true,
+                        "threshold": 1,
+                        "timeout": "ExampleConfig1"
                     }
                 ]
             },
@@ -19,14 +19,12 @@
                 "rules": [
                     {
                         "content": [
-                            "everyone",
-                            "moderator",
-                            "admin"
+                            ""
                         ],
-                        "cutoff": "1d",
+                        "cutoff": "",
                         "enabled": false,
-                        "limit": 2,
-                        "timeout": "ExampleConfig3"
+                        "limit": null,
+                        "timeout": ""
                     }
                 ]
             },
@@ -34,15 +32,15 @@
                 "enabled": true,
                 "rules": [
                     {
-                        "cutoff": "20s",
-                        "enabled": false,
-                        "limit": 2,
-                        "threshold": 0.9,
-                        "timeout": "ExampleConfig1"
+                        "cutoff": "",
+                        "enabled": true,
+                        "limit": null,
+                        "threshold": null,
+                        "timeout": ""
                     }
                 ]
             },
-            "saved_messages": 100,
+            "saved_messages": null,
             "spam": {
                 "enabled": true,
                 "rules": [
@@ -59,70 +57,25 @@
                     "name": "ExampleConfig1",
                     "steps": [
                         {
-                            "cutoff": "1d",
-                            "enabled": true,
-                            "offenseCount": "1",
-                            "timeout": "1m"
-                        },
-                        {
-                            "cutoff": "1d",
-                            "enabled": true,
-                            "offenseCount": "3",
-                            "timeout": "5m"
-                        },
-                        {
-                            "cutoff": "1d",
-                            "enabled": true,
-                            "offenseCount": "5",
-                            "timeout": "30m"
-                        }
-                    ]
-                },
-                {
-                    "name": "ExampleConfig2",
-                    "steps": [
-                        {
-                            "cutoff": "30d",
-                            "enabled": true,
-                            "offenseCount": "1",
-                            "timeout": "6h"
-                        },
-                        {
-                            "cutoff": "30d",
+                            "cutoff": "2m",
                             "enabled": true,
                             "offenseCount": "2",
-                            "timeout": "12h"
-                        },
-                        {
-                            "cutoff": "30d",
-                            "enabled": true,
-                            "offenseCount": "3",
-                            "timeout": "24h"
+                            "timeout": "30s"
                         }
                     ]
-                },
+                }
+            ]
+        },
+        "enabled": true,
+        "helper": {
+            "enabled": true,
+            "rules": [
                 {
-                    "name": "ExampleConfig3",
-                    "steps": [
-                        {
-                            "cutoff": "1d",
-                            "enabled": true,
-                            "offenseCount": "1",
-                            "timeout": "1m"
-                        },
-                        {
-                            "cutoff": "1d",
-                            "enabled": true,
-                            "offenseCount": "5",
-                            "timeout": "1h"
-                        },
-                        {
-                            "cutoff": "1d",
-                            "enabled": true,
-                            "offenseCount": "10",
-                            "timeout": "6h"
-                        }
-                    ]
+                    "enabled": false,
+                    "exact": false,
+                    "reply": "",
+                    "search": "",
+                    "threshold": null
                 }
             ]
         },
@@ -137,7 +90,8 @@
         "manager_role": [
             "@manage_guild",
             "test role"
-        ]
+        ],
+        "prefix": "!"
     },
     "default": {
         "automod": {

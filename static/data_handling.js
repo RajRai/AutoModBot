@@ -162,6 +162,8 @@ function dump_settings(){
     };
 
     settings.manager_role = document.getElementById('manager_role_input').value.split("\n");
+    settings.prefix = document.getElementById('prefix_input').value;
+    settings.enabled = document.getElementById('bot_enabled').checked;
 
     let result = document.getElementById('result_label');
 
@@ -295,6 +297,8 @@ function load_settings(json){
         document.getElementById('automod_enabled').checked = json.automod.enabled;
         document.getElementById('manager_role_input').value = json.manager_role.join("\n");
         document.getElementById('logging_channel_input').value = json.logging.logging_channel;
+        document.getElementById('prefix_input').value = json.prefix;
+        document.getElementById('bot_enabled').checked = json.enabled;
     } catch (e) {}
 
     try {
