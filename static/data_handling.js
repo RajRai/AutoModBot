@@ -119,13 +119,26 @@ function dump_settings(){
     }
     automod.timeout = jsonArr;
 
+    let logging = {}
+    logging.logging_channel = document.getElementById('logging_channel_input').value;
+    checkbox = document.getElementById('log_bans');
+    logging.bans = checkbox.checked;
+    checkbox = document.getElementById('log_timeouts');
+    logging.timeouts = checkbox.checked;
+    checkbox = document.getElementById('log_deletes');
+    logging.deletes = checkbox.checked;
+    checkbox = document.getElementById('log_help_replies');
+    logging.help_replies = checkbox.checked;
+    checkbox = document.getElementById('log_settings_changes');
+    logging.settings_changes = checkbox.checked;
+
     automod.saved_messages = parseInt(document.getElementById('message_count_input').value);
     automod.enabled = document.getElementById('automod_enabled').checked;
     var settings = {
-        automod: automod
+        automod: automod,
+        logging: logging
     };
 
-    settings.logging_channel = document.getElementById('logging_channel_input').value;
     settings.manager_role = document.getElementById('manager_role_input').value.split("\n");
 
     let result = document.getElementById('result_label');
@@ -258,8 +271,17 @@ function load_settings(json){
     try {
         document.getElementById('message_count_input').value = json.automod.saved_messages;
         document.getElementById('automod_enabled').checked = json.automod.enabled;
-        document.getElementById('logging_channel_input').value = json.logging_channel;
         document.getElementById('manager_role_input').value = json.manager_role.join("\n");
+        document.getElementById('logging_channel_input').value = json.logging.logging_channel;
+    } catch (e) {}
+
+    try {
+        console.log(json);
+        document.getElementById('log_bans').checked = json.logging.bans;
+        document.getElementById('log_deletes').checked = json.logging.deletes;
+        document.getElementById('log_timeouts').checked = json.logging.timeouts;
+        document.getElementById('log_help_replies').checked = json.logging.help_replies;
+        document.getElementById('log_settings_changes').checked = json.logging.settings_changes;
     } catch (e) {}
 
     return json;

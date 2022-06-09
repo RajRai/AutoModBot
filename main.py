@@ -1,11 +1,14 @@
+import asyncio
 import json
 import threading
+
+import discord
 from quart_discord import DiscordOAuth2Session
-from src.bot import main
+from src.bot import main, main_async, bot, log_setting_change
 from quart import Quart, render_template, request, session, redirect, url_for
 from src.private import SECRET_KEY, CLIENT_ID, CLIENT_SECRET
 import config.config as config
-from src.bot import bot
+from multiprocessing import process
 
 app = Quart(__name__)
 
@@ -23,14 +26,16 @@ async def verify_authorized(guild_id):
     glds = bot.guilds
     user = await discordOAuth.fetch_user()
 
-    settings = config.settings_for_guild(guild_id)
+    settings = config.settings_for_guild_dict(guild_id)
 
     for guild in glds:
         member = guild.get_member(user.id)
         if guild.id == guild_id and member is not None:
             if member.top_role.permissions.administrator:
                 return True
-            for role in settings.manager_role:
+            if 'manager_role' not in settings:
+                return False
+            for role in settings['manager_role']:
                 if role == '':
                     continue
                 if role[0] == '@':  # Signals that we should use the permissions attribute
@@ -79,14 +84,17 @@ async def settings(guild_id: int):
 
     if request.method == 'POST' and request.is_json:
         config.replace_settings_for_guild(guild_id, await request.json)
+        await log_setting_change(guild_id, await discordOAuth.fetch_user())
 
     sett = config.settings_for_guild_dict(guild_id)
     return await render_template('settings.html', settings=json.dumps(sett))
 
 
 def init():
-    webApp = threading.Thread(target=app.run).start()
+    webApp = threading.Thread(target=app.run)
+    webApp.start()
     main()
+    webApp.join()
 
 
 if __name__ == "__main__":

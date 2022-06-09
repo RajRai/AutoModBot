@@ -126,7 +126,14 @@
                 }
             ]
         },
-        "logging_channel": "automod-logging",
+        "logging": {
+            "bans": true,
+            "deletes": true,
+            "help_replies": true,
+            "logging_channel": "automod-logging",
+            "settings_changes": true,
+            "timeouts": true
+        },
         "manager_role": [
             "@manage_guild",
             "test role"

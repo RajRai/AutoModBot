@@ -12,6 +12,8 @@ prefix = qr.prefix
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=prefix, intents=intents)
 
+logging_queue = {}  # Lol
+
 
 def is_dev(ctx):
     return ctx.author.id == 296153936665247745
@@ -74,7 +76,21 @@ async def on_ready():
 
 
 @bot.event
+async def on_socket_event_type(event_type):  # Really just a hack until I can get Quart/Pycord threads to cooperate
+    for guild_id in logging_queue:
+        settings = settings_for_guild(guild_id)
+        for guild in bot.guilds:
+            if guild.id != guild_id:
+                continue
+            ch = discord.utils.get(guild.text_channels, name=settings.logging.logging_channel)
+            for msg in logging_queue:
+                await ch.send(msg)
+        logging_queue[guild_id] = []
+
+
+@bot.event
 async def on_message(message: Message):
+    global logging_queue
     if message.author.bot:
         return
     await bot.wait_until_ready()
@@ -94,6 +110,18 @@ async def on_command_error(ctx, error):
         await ctx.reply("An unspecified error occurred")
 
 
+async def log_setting_change(guild_id: int, user: User):
+    for guild in bot.guilds:
+        if guild.id == guild_id:
+            settings = settings_for_guild(guild_id)
+            member = guild.get_member(user.id)
+            for channel in guild.channels:
+                if channel.name.lower() == settings.logging.logging_channel:
+                    if logging_queue[guild_id] is None:
+                        logging_queue[guild_id] = []
+                    logging_queue[guild_id].append(f'Settings changed via web UI by user: ' + member.mention)
+
+
 def parse_mode():
     global debug
     try:
@@ -103,6 +131,11 @@ def parse_mode():
                 print("Enabled debugging mode")
     except Exception as err:
         print(str(err))
+
+
+async def main_async():
+    parse_mode()
+    bot.run(TOKEN)
 
 
 def main():

@@ -1,12 +1,13 @@
 import json
-from argparse import Namespace
 import os
+from attrdict import AttrDict
 
 script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_FILE = os.path.join(script_dir, 'data', 'dev.db')
 JSON_PATH = os.path.join(script_dir, 'config', 'settings.json')
 JSON_DUMP_PATH = JSON_PATH
 # JSON_DUMP_PATH = os.path.join(script_dir, 'config', 'settings_dump.json')
+# JSON_PATH = JSON_DUMP_PATH
 json_file = open(JSON_PATH)
 settings = json.load(json_file)
 json_file.close()
@@ -14,7 +15,7 @@ json_file.close()
 
 def settings_for_guild(guild: int):
     global settings
-    return Namespace(**settings[str(guild)])
+    return AttrDict(settings[str(guild)])
 
 
 def settings_for_guild_dict(guild: int):

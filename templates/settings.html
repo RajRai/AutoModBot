@@ -19,12 +19,10 @@
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#GeneralSettings">Bot Settings</a></li>
             <li><a data-toggle="tab" href="#AutomodTab">Automod Settings</a></li>
+            <li><a data-toggle="tab" href="#LoggingTab">Logging Settings</a></li>
         </ul>
         <div class="tab-content">
             <div id="GeneralSettings" class="tab-pane fade in active">
-                <label for="message_count_input">Logging channel name (don't include #):</label>
-                <input type="text" value="" name="text" id="logging_channel_input">
-                <br>
                 <label for="manager_role_input">Role to manage the bot:</label>
                 <textarea id="manager_role_input" cols="25" rows="3"></textarea>
                 <p>
@@ -158,11 +156,31 @@
                     </div>
                 </div>
             </div>
+            <div id="LoggingTab" class="tab-pane fade">
+                <label for="message_count_input">Logging channel name (don't include #):</label>
+                <input type="text" value="" name="text" id="logging_channel_input">
+                <br>
+                <label for="log_bans">Log bans:</label>
+                <input name="profanity-checkbox[]" id="log_bans" type="checkbox">
+                <br>
+                <label for="log_deletes">Log message deletions:</label>
+                <input name="profanity-checkbox[]" id="log_deletes" type="checkbox">
+                <br>
+                <label for="log_timeouts">Log timeouts:</label>
+                <input name="profanity-checkbox[]" id="log_timeouts" type="checkbox">
+                <br>
+                <label for="log_help_replies">Log help replies:</label>
+                <input name="profanity-checkbox[]" id="log_help_replies" type="checkbox">
+                <br>
+                <label for="log_settings_changes">Log changes to bot settings:</label>
+                <input name="profanity-checkbox[]" id="log_settings_changes" type="checkbox">
+                <br>
+            </div>
         </div>
         <SCRIPT language="JavaScript">
             try {
                 // preserve newlines, etc - use valid JSON
-                s = '{{ settings|safe }}'.replace(/\\n/g, "\\n")
+                let s = '{{ settings|safe }}'.replace(/\\n/g, "\\n")
                     .replace(/\\'/g, "\\'")
                     .replace(/\\"/g, '\\"')
                     .replace(/\\&/g, "\\&")

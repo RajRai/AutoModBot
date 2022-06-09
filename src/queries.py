@@ -58,8 +58,8 @@ def log_timeout(user: int, duration: int, reason: str, message: str):
                 VALUES ({user}, {duration}, '{reason}', '{message}')""")
 
 
-def get_offense_count(user: int):
-    return select(f"""SELECT COUNT(*) FROM TIMEOUTS WHERE user = {user}""")[0][0]
+def get_offenses(user: int):
+    return select(f"""SELECT * FROM TIMEOUTS WHERE user = {user}""")[0][0]
 
 
 def get_messages(user: int):
