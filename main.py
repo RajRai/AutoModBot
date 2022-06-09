@@ -1,6 +1,5 @@
 import json
 import threading
-
 from quart_discord import DiscordOAuth2Session
 from src.bot import main, main_async, bot, log_setting_change
 from quart import Quart, render_template, request, session, redirect, url_for

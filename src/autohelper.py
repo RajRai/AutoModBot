@@ -1,7 +1,7 @@
 import discord
 from discord import *
 from config.config import settings_for_guild
-from fuzzywuzzy import fuzz
+from thefuzz import fuzz
 
 
 async def log_helper(message, info, rule):
