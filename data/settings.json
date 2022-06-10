@@ -151,6 +151,99 @@
             "@manage_guild"
         ]
     },
+    "984506757168656424": {
+        "automod": {
+            "blacklist": {
+                "enabled": true,
+                "rules": [
+                    {
+                        "content": "pandas",
+                        "enabled": true,
+                        "exact": true,
+                        "threshold": 1,
+                        "timeout": "config1"
+                    }
+                ]
+            },
+            "enabled": true,
+            "mentions": {
+                "enabled": true,
+                "rules": [
+                    {
+                        "content": [
+                            ""
+                        ],
+                        "cutoff": "",
+                        "enabled": false,
+                        "limit": null,
+                        "timeout": ""
+                    }
+                ]
+            },
+            "repeat": {
+                "enabled": true,
+                "rules": [
+                    {
+                        "cutoff": "",
+                        "enabled": true,
+                        "limit": null,
+                        "threshold": null,
+                        "timeout": ""
+                    }
+                ]
+            },
+            "saved_messages": null,
+            "spam": {
+                "enabled": true,
+                "rules": [
+                    {
+                        "cutoff": "",
+                        "enabled": true,
+                        "limit": null,
+                        "timeout": ""
+                    }
+                ]
+            },
+            "timeout": [
+                {
+                    "name": "config1",
+                    "steps": [
+                        {
+                            "cutoff": "1w",
+                            "enabled": true,
+                            "offenseCount": "1",
+                            "timeout": "1m"
+                        }
+                    ]
+                }
+            ]
+        },
+        "enabled": true,
+        "helper": {
+            "enabled": false,
+            "rules": [
+                {
+                    "enabled": false,
+                    "exact": false,
+                    "reply": "",
+                    "search": "",
+                    "threshold": null
+                }
+            ]
+        },
+        "logging": {
+            "bans": false,
+            "deletes": false,
+            "help_replies": false,
+            "logging_channel": "",
+            "settings_changes": false,
+            "timeouts": false
+        },
+        "manager_role": [
+            ""
+        ],
+        "prefix": "!"
+    },
     "default": {
         "automod": {
             "blacklist": {

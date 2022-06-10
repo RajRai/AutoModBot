@@ -8,6 +8,6 @@
 /httpRequests/
 /.idea/
 /AutoMod.iml
-/src/private.py
+/config/private.py
 /automod/ # Python virtualenv
 /automod/

@@ -4,7 +4,7 @@ from attrdict import AttrDict
 
 script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 DB_FILE = os.path.join(script_dir, 'data', 'dev.db')
-JSON_PATH = os.path.join(script_dir, 'config', 'settings.json')
+JSON_PATH = os.path.join(script_dir, 'data', 'settings.json')
 JSON_DUMP_PATH = JSON_PATH
 # JSON_DUMP_PATH = os.path.join(script_dir, 'config', 'settings_dump.json')
 # JSON_PATH = JSON_DUMP_PATH

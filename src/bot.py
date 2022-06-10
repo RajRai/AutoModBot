@@ -6,7 +6,7 @@ from discord import *
 from discord.ext import commands
 
 from src.autohelper import check_helper
-from src.private import TOKEN
+from config.private import TOKEN
 import src.queries as qr
 from src.automoderation import auto_moderate
 import src.automoderation as am
