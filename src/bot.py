@@ -18,8 +18,6 @@ prefix = config.prefix
 intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=prefix, intents=intents)
 
-logging_queue = {}  # Lol
-
 
 def is_dev(ctx):
     return ctx.author.id == 296153936665247745
@@ -45,10 +43,6 @@ def is_server_manager(ctx):
     return ctx.author.top_role.permissions.manage_guild
 
 
-def is_bot_manager(ctx):
-    return is_dev(ctx) or is_server_manager(ctx)
-
-
 @bot.command(name='guilds')
 @commands.check(is_dev)
 async def guilds(ctx, *words):
@@ -56,7 +50,7 @@ async def guilds(ctx, *words):
 
 
 @bot.command(name='untimeout', help='Removes a user from the timeout list')
-@commands.check(is_bot_manager)
+@commands.check(is_server_manager)
 async def untimeout(ctx, *words):
     guild_id = ctx.guild.id
     users = [user_mentioned.id for user_mentioned in ctx.message.mentions]
@@ -65,7 +59,7 @@ async def untimeout(ctx, *words):
 
 
 @bot.command(name='disable', help="Disables the bot's automoderation features")
-@commands.check(is_bot_manager)
+@commands.check(is_server_manager)
 async def disable(ctx, *words):
     settings = settings_for_guild_dict(ctx.guild.id)
     settings['enabled'] = False
@@ -73,7 +67,7 @@ async def disable(ctx, *words):
 
 
 @bot.command(name='enable', help="Enables the bot's automoderation features")
-@commands.check(is_bot_manager)
+@commands.check(is_server_manager)
 async def enable(ctx, *words):
     settings = settings_for_guild_dict(ctx.guild.id)
     settings['enabled'] = True
@@ -96,9 +90,8 @@ async def idlestatus(ctx, *words):
 
 async def update_message_history(message: Message):
     qr.store_message(message)
-    save = settings_for_guild(message.guild.id).automod.saved_messages
-    if save is not None and isinstance(save, int):
-        qr.prune_history(message.author.id, save)
+    settings = settings_for_guild(message.guild.id)
+    qr.prune_history(message.author.id, settings.automod.saved_messages)
 
 
 @bot.event
@@ -113,8 +106,8 @@ async def on_message(message: Message):
             await auto_moderate(message)
             await update_message_history(message)
             await check_helper(message)
-    except Exception:
-        pass
+    except Exception as e:
+        print(e)
 
 
 @bot.event
@@ -132,6 +125,8 @@ async def log_setting_change(guild_id: int, user: User):  # Thanks Quart
         'Authorization': f'Bot {TOKEN}'
     }
     settings = settings_for_guild(guild_id)
+    if not settings.logging.settings_changes:
+        return
     channels = json.loads(
         json.dumps(requests.get(f'https://discord.com/api/v10/guilds/{guild_id}/channels', headers=headers).json()))
     for channel in channels:
@@ -157,9 +152,13 @@ def parse_mode():
         print(str(err))
 
 
+def close():
+    bot.close()
+
+
 async def main_async():
     parse_mode()
-    bot.run(TOKEN)
+    await bot.start(TOKEN)
 
 
 def main():

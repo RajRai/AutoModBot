@@ -1,0 +1,38 @@
+{
+  "enabled": true,
+  "prefix": "!",
+  "manager_role": [""],
+  "automod": {
+    "blacklist": {
+      "enabled": false,
+      "rules": []
+    },
+    "enabled": false,
+    "mentions": {
+      "enabled": false,
+      "rules": []
+    },
+    "repeat": {
+      "enabled": false,
+      "rules": []
+    },
+    "saved_messages": 100,
+    "spam": {
+      "enabled": false,
+      "rules": []
+    },
+    "timeout": []
+  },
+  "helper": {
+    "enabled": false,
+    "rules": []
+  },
+  "logging": {
+    "bans": false,
+    "deletes": false,
+    "help_replies": false,
+    "logging_channel": "",
+    "settings_changes": false,
+    "timeouts": false
+  }
+}

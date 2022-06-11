@@ -119,11 +119,11 @@ def get_timeout_from_name(name: str, settings):
             return timeout
 
 
-def get_timeout_duration(user, rule, settings):
+def get_timeout_duration(user: int, guild: int, rule, settings):
     config = get_timeout_from_name(rule.timeout, settings)
     if config is None:
         return -1
-    offenses_t = queries.get_offenses(user)
+    offenses_t = queries.get_offenses(user, guild)
     duration_seconds = 0
     for step in config.steps:
         try:
@@ -145,7 +145,7 @@ def get_timeout_duration(user, rule, settings):
 async def log_timeout(message, duration, reason, info):
     settings = settings_for_guild(message.guild.id)
     user = message.author
-    queries.log_timeout(user.id, duration, reason, message.content)
+    queries.log_timeout(user.id, message.guild.id, duration, reason, message.content)
     if settings.logging.timeouts and duration > 0 or settings.logging.deletes:
         out = f'Deleted message and timed out user {user.mention}' \
               f'with duration {duration / 60:.2f}m for reason: **{reason}**.\n' \
@@ -172,11 +172,11 @@ async def log_timeout(message, duration, reason, info):
 
 async def give_ban(message: Message, reason: str, info: tuple):
     settings = settings_for_guild(message.guild.id)
-    offenses = queries.get_offenses(message.author.id)
+    offenses = queries.get_offenses(message.author.id, message.guild.id)
     out = f' banned from the server.' \
           f'Message: {message.content}\n' \
           f'Time: {datetime.datetime.now(datetime.timezone.utc).strftime("%Y-%m-%d %H:%M:%f")}\n' \
-          f'Previous offenses: ```{offenses}```' \
+          f'Previous offenses: ```{offenses}```\n' \
           f'Info: \n'
     if reason == 'profanity':
         out += f'```Blacklist entry: {info[2].content}\n' \
@@ -202,7 +202,7 @@ async def give_ban(message: Message, reason: str, info: tuple):
 async def give_timeout(message: Message, reason: str, info: tuple):
     await message.delete()
     settings = settings_for_guild(message.guild.id)
-    time = get_timeout_duration(message.author.id, info[2], settings)
+    time = get_timeout_duration(message.author.id, message.guild.id, info[2], settings)
     if time == 'ban':
         await give_ban(message, reason, info)
         return

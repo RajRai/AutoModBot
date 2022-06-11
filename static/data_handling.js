@@ -318,7 +318,7 @@ function load_settings(json){
             rule = json.helper.rules[i];
             row = table.rows[i + 1];
             col = row.cells;
-            col[1].firstChild.checked = rule.checked;
+            col[1].firstChild.checked = rule.enabled;
             col[2].firstChild.value = rule.search;
             col[3].firstChild.checked = rule.exact;
             col[4].firstChild.value = rule.threshold;

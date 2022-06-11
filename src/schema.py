@@ -1,11 +1,7 @@
-from queries import *
+from src.queries import *
 
-if __name__ == "__main__":
-    drop = """DROP TABLE IF EXISTS MESSAGES"""
-    execute(drop)
-    drop = """DROP TABLE IF EXISTS TIMEOUTS"""
-    execute(drop)
 
+def init():
     table = """ CREATE TABLE IF NOT EXISTS MESSAGES (
                 time DATETIME DEFAULT(STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW')),
                 user INTEGER NOT NULL,
@@ -20,18 +16,23 @@ if __name__ == "__main__":
     table = """ CREATE TABLE IF NOT EXISTS TIMEOUTS (
                 time DATETIME DEFAULT(STRFTIME('%Y-%m-%d %H:%M:%f', 'NOW')),
                 user INTEGER NOT NULL,
+                guild INTEGER NOT NULL,
                 duration,
                 reason VARCHAR,
                 message VARCHAR,
-                PRIMARY KEY (time, user)
+                PRIMARY KEY (time, user, guild)
             ); """
     execute(table)
 
-    data = """INSERT INTO MESSAGES (user, message) VALUES (0, 'test1')"""
-    execute(data)
-    data = """INSERT INTO MESSAGES (user, message) VALUES (0, 'test2')"""
-    execute(data)
-    data = """INSERT INTO MESSAGES (user, message) VALUES (0, 'test3')"""
-    execute(data)
+
+def clean():
+    drop = """DROP TABLE IF EXISTS MESSAGES"""
+    execute(drop)
+    drop = """DROP TABLE IF EXISTS TIMEOUTS"""
+    execute(drop)
+
+    init()
 
 
+if __name__ == "__main__":
+    clean()

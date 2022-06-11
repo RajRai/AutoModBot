@@ -1,6 +1,5 @@
 import sqlite3
 from discord import *
-from discord.ext.commands import Context
 from config.config import DB_FILE
 import src.automoderation as automod
 
@@ -10,6 +9,7 @@ def _serialize_list(list):
     for x in list:
         out += str(x) + '\t'
     return out.strip()
+
 
 def _create_connection(db_file):
     conn = None
@@ -38,18 +38,19 @@ def execute(query):
     conn.close()
 
 
-def log_timeout(user: int, duration: int, reason: str, message: str):
-    execute(f"""INSERT INTO TIMEOUTS (user, duration, reason, message)
-                VALUES ({user}, {duration}, '{reason}', '{message}')""")
+def log_timeout(user: int, guild: int, duration: int, reason: str, message: str):
+    execute(f"""INSERT INTO TIMEOUTS (user, guild, duration, reason, message)
+                VALUES ({user}, {guild}, {duration}, '{reason}', '{message}')""")
 
 
-def get_offenses(user: int):
-    return select(f"""SELECT * FROM TIMEOUTS WHERE user = {user}""")
+def get_offenses(user: int, guild: int):
+    return select(f"""SELECT * FROM TIMEOUTS WHERE user = {user} AND guild = {guild}""")
 
 
 def get_messages(user: int):
     rows = select(f"""SELECT message, time FROM MESSAGES WHERE user = {user}""")
     return list(rows)
+
 
 def get_mentions(user: int):
     return list(select(f"""SELECT user_mentions, role_mentions, mentions_everyone, message, time FROM MESSAGES 
@@ -69,10 +70,6 @@ def prune_history(user: int, save: int):
     if (diff <= 0):
         return
     execute(f"""DELETE FROM MESSAGES WHERE rowid IN (SELECT rowid FROM MESSAGES WHERE user = {user} LIMIT {diff} )""")
-
-
-def set_enabled(ctx: Context, value: bool):
-    execute(f"""UPDATE SETTINGS SET enabled = {1 if value else 0} WHERE guild = {ctx.guild.id}""")
 
 
 if __name__ == "__main__":

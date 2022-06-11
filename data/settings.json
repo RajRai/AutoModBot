@@ -1,4 +1,44 @@
 {
+    "700768307493601302": {
+        "automod": {
+            "blacklist": {
+                "enabled": false,
+                "rules": []
+            },
+            "enabled": false,
+            "mentions": {
+                "enabled": false,
+                "rules": []
+            },
+            "repeat": {
+                "enabled": false,
+                "rules": []
+            },
+            "saved_messages": 100,
+            "spam": {
+                "enabled": false,
+                "rules": []
+            },
+            "timeout": []
+        },
+        "enabled": true,
+        "helper": {
+            "enabled": false,
+            "rules": []
+        },
+        "logging": {
+            "bans": false,
+            "deletes": false,
+            "help_replies": false,
+            "logging_channel": "",
+            "settings_changes": false,
+            "timeouts": false
+        },
+        "manager_role": [
+            ""
+        ],
+        "prefix": "!"
+    },
     "825811502916436001": {
         "automod": {
             "blacklist": {
@@ -6,7 +46,7 @@
                 "rules": [
                     {
                         "content": "pandas",
-                        "enabled": false,
+                        "enabled": true,
                         "exact": false,
                         "threshold": 0.9,
                         "timeout": "ExampleConfig2"
@@ -126,11 +166,12 @@
                 }
             ]
         },
+        "enabled": true,
         "helper": {
             "enabled": true,
             "rules": [
                 {
-                    "enabled": true,
+                    "enabled": false,
                     "exact": true,
                     "reply": "hello",
                     "search": "help me please",
@@ -149,7 +190,8 @@
         "manager_role": [
             "test role",
             "@manage_guild"
-        ]
+        ],
+        "prefix": "!"
     },
     "984506757168656424": {
         "automod": {
@@ -244,28 +286,108 @@
         ],
         "prefix": "!"
     },
-    "default": {
+    "985229845531353148": {
         "automod": {
             "blacklist": {
-                "enabled": false,
-                "rules": []
+                "enabled": true,
+                "rules": [
+                    {
+                        "content": "pandas",
+                        "enabled": true,
+                        "exact": false,
+                        "threshold": 0.9,
+                        "timeout": "profanity"
+                    }
+                ]
             },
-            "enabled": false,
+            "enabled": true,
             "mentions": {
-                "enabled": false,
-                "rules": []
+                "enabled": true,
+                "rules": [
+                    {
+                        "content": [
+                            ""
+                        ],
+                        "cutoff": "",
+                        "enabled": false,
+                        "limit": null,
+                        "timeout": ""
+                    }
+                ]
             },
             "repeat": {
-                "enabled": false,
-                "rules": []
+                "enabled": true,
+                "rules": [
+                    {
+                        "cutoff": "",
+                        "enabled": true,
+                        "limit": null,
+                        "threshold": null,
+                        "timeout": ""
+                    }
+                ]
             },
             "saved_messages": 100,
             "spam": {
-                "enabled": false,
-                "rules": []
+                "enabled": true,
+                "rules": [
+                    {
+                        "cutoff": "",
+                        "enabled": true,
+                        "limit": null,
+                        "timeout": ""
+                    }
+                ]
             },
-            "timeout": []
+            "timeout": [
+                {
+                    "name": "profanity",
+                    "steps": [
+                        {
+                            "cutoff": "1d",
+                            "enabled": true,
+                            "offenseCount": "1",
+                            "timeout": "1m"
+                        }
+                    ]
+                },
+                {
+                    "name": "spam",
+                    "steps": [
+                        {
+                            "cutoff": "1d",
+                            "enabled": true,
+                            "offenseCount": "1",
+                            "timeout": "0m"
+                        }
+                    ]
+                }
+            ]
         },
-        "logging_channel": "automod-logging"
+        "enabled": true,
+        "helper": {
+            "enabled": true,
+            "rules": [
+                {
+                    "enabled": true,
+                    "exact": false,
+                    "reply": "refund link here",
+                    "search": "how to refund",
+                    "threshold": 0.9
+                }
+            ]
+        },
+        "logging": {
+            "bans": true,
+            "deletes": true,
+            "help_replies": true,
+            "logging_channel": "general",
+            "settings_changes": true,
+            "timeouts": true
+        },
+        "manager_role": [
+            ""
+        ],
+        "prefix": "!"
     }
 }

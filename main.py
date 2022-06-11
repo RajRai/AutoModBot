@@ -1,10 +1,12 @@
+import asyncio
 import json
 import threading
 from quart_discord import DiscordOAuth2Session
-from src.bot import main, bot, log_setting_change
+from src.bot import main, main_async, bot, log_setting_change
 from quart import Quart, render_template, request, redirect, url_for
 from config.private import SECRET_KEY, CLIENT_ID, CLIENT_SECRET
 import config.config as config
+from src.schema import init as db_init
 
 app = Quart(__name__)
 
@@ -18,7 +20,8 @@ discordOAuth = DiscordOAuth2Session(app)
 async def verify_authorized(guild_id):
     if not await discordOAuth.authorized:
         return False
-    await bot.wait_until_ready()
+    if not bot.is_ready():
+        return False
     glds = bot.guilds
     user = await discordOAuth.fetch_user()
 
@@ -45,6 +48,11 @@ async def verify_authorized(guild_id):
     return False
 
 
+@app.route("/")
+async def home():
+    return redirect(url_for("login"))
+
+
 @app.route("/login")
 async def login():
     return await discordOAuth.create_session(prompt=False)
@@ -64,7 +72,8 @@ async def callback():
 async def guilds():
     if not await discordOAuth.authorized:
         return redirect(url_for('login'))
-    await bot.wait_until_ready()
+    if not bot.is_ready():
+        return 'Refresh'
     glds = bot.guilds
     managing = []
     for guild in glds:
@@ -79,19 +88,22 @@ async def settings(guild_id: int):
         return redirect(url_for('guilds'))
 
     if request.method == 'POST' and request.is_json:
-        config.replace_settings_for_guild(guild_id, await request.json)
         await log_setting_change(guild_id, await discordOAuth.fetch_user())
+        config.replace_settings_for_guild(guild_id, await request.json)
 
     sett = config.settings_for_guild_dict(guild_id)
     return await render_template('settings.html', settings=json.dumps(sett))
 
 
 def init():
-    webApp = threading.Thread(target=app.run)
-    webApp.start()
-    main()
-    webApp.join()
+    web_app = threading.Thread(target=app.run)
+    bot_t = threading.Thread(target=main)
+    web_app.start()
+    bot_t.start()
+    web_app.join()
+    bot_t.join()
 
 
 if __name__ == "__main__":
+    db_init()
     init()
