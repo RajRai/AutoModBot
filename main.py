@@ -1,6 +1,7 @@
-import asyncio
 import json
 import threading
+import time
+
 from quart_discord import DiscordOAuth2Session
 from src.bot import main, main_async, bot, log_setting_change
 from quart import Quart, render_template, request, redirect, url_for
@@ -97,11 +98,18 @@ async def settings(guild_id: int):
 
 def init():
     web_app = threading.Thread(target=app.run)
+    web_app.daemon = True
     bot_t = threading.Thread(target=main)
+    bot_t.daemon = True
+
     web_app.start()
     bot_t.start()
-    web_app.join()
-    bot_t.join()
+
+    try:
+        while threading.active_count() > 0:
+            time.sleep(1)
+    except KeyboardInterrupt:
+        print('Terminating due to Ctrl+C')
 
 
 if __name__ == "__main__":
