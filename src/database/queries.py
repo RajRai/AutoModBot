@@ -1,7 +1,7 @@
 import sqlite3
 from discord import *
 from config.config import DB_FILE
-import src.automoderation as automod
+import src.bot.modules.automoderation as automod
 
 
 def _serialize_list(list):
@@ -29,6 +29,28 @@ def select(query):
     return rows
 
 
+def select_dict(columns: str, table: str, append: str):
+    conn = _create_connection(DB_FILE)
+    if conn is None:
+        return None
+    rows = conn.cursor().execute(
+        f"""SELECT {columns} from {table} {append}"""
+    ).fetchall()
+    conn.close()
+
+    result = []
+
+    for r in rows:
+        d = {}
+        splits = columns.split(',')
+        for i in range(len(splits)):
+            col = splits[i]
+            d[col.strip()] = r[r[i]]
+        result.append(r)
+
+    return result
+
+
 def execute(query):
     conn = _create_connection(DB_FILE)
     if conn is None:
@@ -48,14 +70,13 @@ def get_offenses(user: int, guild: int):
 
 
 def get_messages(user: int):
-    rows = select(f"""SELECT message, time FROM MESSAGES WHERE user = {user}""")
-    return list(rows)
+    return select_dict(columns="message, time", table="MESSAGES", append=f"WHERE user = {user}")
 
 
 def get_mentions(user: int):
-    return list(select(f"""SELECT user_mentions, role_mentions, mentions_everyone, message, time FROM MESSAGES 
-                           WHERE user = {user} 
-                           AND (user_mentions != '' OR role_mentions != '' OR mentions_everyone != 0) """))
+    return select_dict(columns="user_mentions, role_mentions, mentions_everyone, message, time", table="MESSAGES",
+                       append=f"WHERE user = {user}"
+                              f"AND (user_mentions != '' OR role_mentions != '' OR mentions_everyone != 0)")
 
 
 def store_message(message: Message):

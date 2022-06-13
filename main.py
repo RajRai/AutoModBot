@@ -3,11 +3,11 @@ import threading
 import time
 
 from quart_discord import DiscordOAuth2Session
-from src.bot import main, main_async, bot, log_setting_change
+from src.bot.bot import main, bot, log_setting_change, is_server_manager
 from quart import Quart, render_template, request, redirect, url_for
 from config.private import SECRET_KEY, CLIENT_ID, CLIENT_SECRET
 import config.config as config
-from src.schema import init as db_init
+from src.database.schema import init as db_init
 
 app = Quart(__name__)
 
@@ -26,26 +26,10 @@ async def verify_authorized(guild_id):
     glds = bot.guilds
     user = await discordOAuth.fetch_user()
 
-    settings = config.settings_for_guild_dict(guild_id)
-
     for guild in glds:
         member = guild.get_member(user.id)
         if guild.id == guild_id and member is not None:
-            if member.top_role.permissions.administrator:
-                return True
-            if settings is None or 'manager_role' not in settings:
-                return False
-            for role in settings['manager_role']:
-                if role == '':
-                    continue
-                if role[0] == '@':  # Signals that we should use the permissions attribute
-                    try:
-                        if getattr(member.top_role.permissions, role[1:].lower()):
-                            return True
-                    except Exception:
-                        pass
-                elif role.lower() in [r.name.lower() for r in member.roles]:
-                    return True
+            return is_server_manager(guild_id, member)
     return False
 
 

@@ -20,30 +20,22 @@ defaults_file = open(DEFAULTS_PATH)
 defaults = json.load(defaults_file)
 defaults_file.close()
 
-
-def is_int_or_parseable(x):
-    if isinstance(x, int):
-        return True
-    try:
-        int(x)
-        return True
-    except ValueError:
-        return False
+seconds_per_unit = {"s": 1, "m": 60, "h": 3600, "d": 86400, "w": 604800}
 
 
-def merge_dicts(d_into: dict, d_from: dict):
+def merge_defaults(d_into: dict, d_from: dict):
     for d in d_from:
         if d not in d_into:
             d_into[d] = d_from[d]
         if isinstance(d_from[d], dict):
-            merge_dicts(d_into[d], d_from[d])
+            merge_defaults(d_into[d], d_from[d])
     return d_into
 
 
 def init_settings_for_guild(guild: int):
     global settings, defaults
     sett = settings[str(guild)] if str(guild) in settings else {}
-    sett = merge_dicts(d_into=sett, d_from=defaults)
+    sett = merge_defaults(d_into=sett, d_from=defaults)
     replace_settings_for_guild(guild, sett)
 
 
@@ -56,22 +48,28 @@ class SettingValidation:
 
 
 def validate_settings(sett: dict):
-    # Anything validated here should also be defined in default_settings.json to avoid any key errors
-    validations = [
-        SettingValidation(setting=sett['prefix'], replace=lambda x: '!', test=lambda x: x is not None and len(x) > 0),
-        SettingValidation(setting=sett['automod']['saved_messages'],
-                          replace=lambda x: int(x) if is_int_or_parseable(x) else 0,
-                          test=lambda x: not is_int_or_parseable(x))
-    ]
+    # Anything validated anywhere in this function should also be defined in default_settings.json to avoid any key
+    # errors. For iterated validations (i.e validating automoderation rules), defaults of empty arrays are fine
+    if sett['prefix'] is None or len(sett['prefix']) == 0:
+        sett['prefix'] = '!'
 
-    for valid in validations:
-        if not valid.iterate:
-            valid.setting = [valid.setting]
-        else:
-            for i in range(len(valid.setting)):
-                val = valid.setting[i]
-                if not valid.test(val):
-                    valid.setting[i] = valid.replace(val.setting)
+    x = sett['automod']['saved_messages']
+    if isinstance(x, str):
+        sett['automod']['saved_messages'] = int(x) if x.isdigit() else 0
+
+    for mode in ['mentions', 'repeat', 'spam']:
+        for r in sett['automod'][mode]['rules']:
+            if r['cutoff'][:-1] not in seconds_per_unit or not r['cutoff'][:-1].isdigit():
+                r['cutoff'] = r['cutoff'] + 's' if r['cutoff'].isdigit() else '0s'
+
+    for t in sett['automod']['timeout']:
+        for s in t['steps']:
+            if s['cutoff'][:-1] not in seconds_per_unit or not s['cutoff'][:-1].isdigit():
+                s['cutoff'] = s['cutoff'] + 's' if s['cutoff'].isdigit() else '0s'
+            if s['timeout'][:-1] not in seconds_per_unit or not s['timeout'][:-1].isdigit():
+                s['timeout'] = s['timeout'] + 's' if s['timeout'].isdigit() else '0s'
+
+    return sett
 
 
 def prefix(bot, message):
@@ -94,8 +92,8 @@ def settings_for_guild_dict(guild: int):
 
 def replace_settings_for_guild(guild: int, update: dict):
     global settings
-    validate_settings(update)
-    settings[str(guild)] = update
+    sett = validate_settings(update)
+    settings[str(guild)] = sett
     dump_settings()
 
 
@@ -103,3 +101,4 @@ def dump_settings():
     global settings
     with open(JSON_DUMP_PATH, 'w') as f:
         json.dump(settings, f, sort_keys=True, indent=4)
+        f.close()

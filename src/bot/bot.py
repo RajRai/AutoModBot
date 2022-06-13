@@ -5,11 +5,10 @@ import requests
 from discord import *
 from discord.ext import commands
 
-from src.autohelper import check_helper
+from src.bot.modules.autohelper import check_helper
 from config.private import TOKEN
-import src.queries as qr
-from src.automoderation import auto_moderate
-import src.automoderation as am
+import src.database.queries as qr
+from src.bot.modules.automoderation import auto_moderate
 from config.config import settings_for_guild, settings_for_guild_dict
 from config import config
 
@@ -19,13 +18,9 @@ intents = discord.Intents.all()
 bot = commands.Bot(command_prefix=prefix, intents=intents)
 
 
-def is_dev(ctx):
-    return ctx.author.id == 296153936665247745
-
-
-def is_server_manager(ctx):
-    settings = settings_for_guild_dict(ctx.guild.id)
-    if ctx.author.top_role.permissions.administrator:
+def is_server_manager(guild: int, user: Member):
+    settings = settings_for_guild_dict(guild)
+    if user.top_role.permissions.administrator:
         return True
     if 'manager_role' not in settings:
         return False
@@ -34,58 +29,13 @@ def is_server_manager(ctx):
             continue
         if role[0] == '@':  # Signals that we should use the permissions attribute
             try:
-                if getattr(ctx.author.top_role.permissions, role[1:].lower()):
+                if getattr(user.top_role.permissions, role[1:].lower()):
                     return True
             except Exception:
                 pass
-        elif role.lower() in [r.name.lower() for r in ctx.author.roles]:
+        elif role.lower() in [r.name.lower() for r in user.roles]:
             return True
-    return ctx.author.top_role.permissions.manage_guild
-
-
-@bot.command(name='guilds')
-@commands.check(is_dev)
-async def guilds(ctx, *words):
-    await ctx.reply(" ".join([str(g.id) for g in bot.guilds]))
-
-
-@bot.command(name='untimeout', help='Removes a user from the timeout list')
-@commands.check(is_server_manager)
-async def untimeout(ctx, *words):
-    guild_id = ctx.guild.id
-    users = [user_mentioned.id for user_mentioned in ctx.message.mentions]
-    for user in users:
-        am.lift_timeout(user, guild_id)
-
-
-@bot.command(name='disable', help="Disables the bot's automoderation features")
-@commands.check(is_server_manager)
-async def disable(ctx, *words):
-    settings = settings_for_guild_dict(ctx.guild.id)
-    settings['enabled'] = False
-    config.replace_settings_for_guild(ctx.guild.id, settings)
-
-
-@bot.command(name='enable', help="Enables the bot's automoderation features")
-@commands.check(is_server_manager)
-async def enable(ctx, *words):
-    settings = settings_for_guild_dict(ctx.guild.id)
-    settings['enabled'] = True
-    config.replace_settings_for_guild(ctx.guild.id, settings)
-
-
-@bot.command(name='status', help="Sets the bot's status text, with an online status")
-@commands.check(is_dev)
-async def status(ctx, *words):
-    activity = discord.Game(name=" ".join(words))
-    await bot.change_presence(status=discord.Status.online, activity=activity)
-
-
-@bot.command(name='idlestatus', help="Sets the bot's status text, with an idle status")
-@commands.check(is_dev)
-async def idlestatus(ctx, *words):
-    activity = discord.Game(name=" ".join(words))
-    await bot.change_presence(status=discord.Status.idle, activity=activity)
+    return user.top_role.permissions.manage_guild
 
 
 async def update_message_history(message: Message):

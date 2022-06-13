@@ -219,7 +219,7 @@ function load_settings(json){
     try {
         table = document.getElementById('spam_settings');
         let checkbox = document.getElementById('spam_enabled');
-        checkbox.checked = automod.spriteAndMetadata.enabled;
+        checkbox.checked = json.automod.spam.enabled;
         for (i = 0; i < json.automod.spam.rules.length; i++) {
             if (i > 0) addRowSpam('spam_settings');
             rule = json.automod.spam.rules[i];

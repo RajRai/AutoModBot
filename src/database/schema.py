@@ -1,4 +1,4 @@
-from src.queries import *
+from src.database.queries import *
 
 
 def init():
