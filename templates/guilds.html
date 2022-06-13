@@ -7,11 +7,11 @@
         window.onload = function() {
             load_guilds();
         }
-        const guilds = JSON.parse(`{{ guilds|safe }}`);
+        const guilds = JSON.parse(`{ }`);
         function load_guilds(){
             var menu = document.getElementById('guild-names');
-            for (var i = 0; i < guilds.length; i++){
-                menu.innerHTML += `<option value="${guilds[i].name}">${guilds[i].name}</option>\n`;
+            for (var i = 0; i < 3; i++){
+                menu.innerHTML += `<option value="sample${i}">sample${i}</option>\n`;
             }
         }
         function select_guild(){
