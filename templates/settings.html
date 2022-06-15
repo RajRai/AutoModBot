@@ -13,221 +13,237 @@
     </HEAD>
 
     <body>
-        <div id="debug"></div>
-        <LABEL for="save_button" id="result_label"></LABEL>
-        <INPUT type="button" value="Save" id="save_button" onclick="dump_settings()">
-        <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#GeneralSettings">Bot Settings</a></li>
-            <li><a data-toggle="tab" href="#AutomodTab">Automod Settings</a></li>
-            <li><a data-toggle="tab" href="#HelperTab">Helper Settings</a></li>
-            <li><a data-toggle="tab" href="#LoggingTab">Logging Settings</a></li>
-        </ul>
-        <div class="tab-content">
-            <div id="GeneralSettings" class="tab-pane fade in active">
-                <label for="bot_enabled">Bot Enabled:</label>
-                <input name="automod-checkbox[]" id="bot_enabled" type="checkbox">
-                <br>
-                <LABEL for="prefix_input" id="prefix_label">Commands prefix:</LABEL>
-                <INPUT type="text" id="prefix_input">
-                <br>
-                <label for="manager_role_input">Role to manage the bot:</label>
-                <textarea id="manager_role_input" cols="25" rows="3"></textarea>
-                <p>
-                    One role/permission per line.
-                    <br>
-                    Note that anyone with server administrator permissions can always manage the bot. If this is left
-                    blank, only users with server administrator permissions can manage the bot.
-                    <br>
-                    You may also supply the name of a Discord permissions attribute here, to cover multiple roles with
-                    a single entry. See <a href="https://docs.pycord.dev/en/master/api.html#permissions">the Pycord docs</a>
-                    for a list of names. They must be exact matches, including underscores, and they need to be preceded
-                    by the @ symbol.
-                </p>
-            </div>
-            <div id="AutomodTab" class="tab-pane fade">
+        <div class="container">
+            <div class="row">
+
+              <div class="col-6">
+                <div id="debug"></div>
                 <ul class="nav nav-tabs">
-                    <li class="active"><a data-toggle="tab" href="#AutomodGeneralSettings">General</a></li>
-                    <li><a data-toggle="tab" href="#ProfanityFilter">Profanity Filter</a></li>
-                    <li><a data-toggle="tab" href="#SpamSettings">Spam Settings</a></li>
-                    <li><a data-toggle="tab" href="#RepeatMessageSettings">Repeat Message Settings</a></li>
-                    <li><a data-toggle="tab" href="#MassMentionSettings">Mass Mention Settings</a></li>
-                    <li><a data-toggle="tab" href="#TimeoutConfigurations">Timeout Configurations</a></li>
+                    <li class="active"><a data-toggle="tab" href="#GeneralSettings">Bot Settings</a></li>
+                    <li><a data-toggle="tab" href="#AutomodTab">Automod Settings</a></li>
+                    <li><a data-toggle="tab" href="#HelperTab">Helper Settings</a></li>
+                    <li><a data-toggle="tab" href="#LoggingTab">Logging Settings</a></li>
                 </ul>
                 <div class="tab-content">
-                    <div id="AutomodGeneralSettings" class="tab-pane fade in active">
-                        <label for="automod_enabled">Automod Enabled:</label>
-                        <input name="automod-checkbox[]" id="automod_enabled" type="checkbox">
-                        <br>
-                        <label for="message_count_input">Messages per user to save in DB:</label>
-                        <input type="text" value="" name="text" id="message_count_input">
-                    </div>
 
-                    <div id="ProfanityFilter" class="tab-pane fade">
-                        <label for="profanity_enabled">Profanity Filter Enabled:</label>
-                        <input name="profanity-checkbox[]" id="profanity_enabled" type="checkbox">
-                        <TABLE id="profanity_settings" width="350px" border="1">
-                            <tr>
-                                <TH></TH>
-                                <TH>Enabled?</TH>
-                                <TH>Blacklist Text</TH>
-                                <TH>Exact match?</TH>
-                                <TH>Similarity threshold (0-1, 0.9 recommended)</TH>
-                                <TH>Timeout Configuration Name</TH>
-                            </tr>
-                            <TR>
-                                <TD><input type="button" name="button1" value="Delete" onclick="removeRow('button1')"></TD>
-                                <TD><input name="enabled-checkbox[]" id="enabled-checkbox-0-profanity_settings" type="checkbox" checked="checked"></TD>
-                                <TD><input type="text" value="" name="text"></TD>
-                                <TD><input name="exact-checkbox[]" id="exact-checkbox-0-profanity_settings" type="checkbox"></TD>
-                                <TD><input type="text" value="" name="threshold"></TD>
-                                <TD><input type="text" value="" name="timeout"></TD>
-                            </TR>
-                        </TABLE>
-                        <INPUT type="button" value="Add Row" onclick="addRowProfanity('profanity_settings')">
-                    </div>
 
-                    <div id="SpamSettings" class="tab-pane fade">
-                        <label for="spam_enabled">Spam Filter Enabled:</label>
-                        <input name="profanity-checkbox[]" id="spam_enabled" type="checkbox">
-                        <TABLE id="spam_settings" width="350px" border="1">
-                            <tr>
-                                <TH></TH>
-                                <TH>Enabled?</TH>
-                                <TH>Time period (i.e 5s, 1m, etc.)</TH>
-                                <TH>Message limit</TH>
-                                <TH>Timeout Configuration Name</TH>
-                            </tr>
-                            <TR>
-                                <TD><input type="button" name="button1" value="Delete" onclick="removeRow('button1')"></TD>
-                                <TD><input name="enabled-checkbox[]" access="false" id="enabled-checkbox-0-spam_settings" value="exact" type="checkbox" checked="checked"></TD>
-                                <TD><input type="text" value="" name="cutoff"></TD>
-                                <TD><input type="text" value="" name="limit"></TD>
-                                <TD><input type="text" value="" name="timeout"></TD>
-                            </TR>
-                        </TABLE>
-                        <INPUT type="button" value="Add Row" onclick="addRowSpam('spam_settings')">
+                    <div id="GeneralSettings" class="tab-pane fade in active">
+                        <form>
+                        <div class=fornm-group>
+                        <label for="bot_enabled">Bot Enabled:</label>
+                        <input name="automod-checkbox[]" id="bot_enabled" class="form-check-input" type="checkbox">
                     </div>
-
-                    <div id="RepeatMessageSettings" class="tab-pane fade">
-                        <label for="repeat_enabled">Repeated Message Filter Enabled:</label>
-                        <input name="profanity-checkbox[]" id="repeat_enabled" type="checkbox">
-                        <TABLE id="repeat_settings" width="350px" border="1">
-                            <tr>
-                                <TH></TH>
-                                <TH>Enabled?</TH>
-                                <TH>Time period (i.e 5s, 1m, etc.)</TH>
-                                <TH>Message limit</TH>
-                                <TH>Similarity threshold (0-1, 0.9 recommended)</TH>
-                                <TH>Timeout Configuration Name</TH>
-                            </tr>
-                            <TR>
-                                <TD><input type="button" name="button1" value="Delete" onclick="removeRow('button1')"></TD>
-                                <TD><input name="enabled-checkbox[]" access="false" id="enabled-checkbox-0-repeat_settings" value="exact" type="checkbox" checked="checked"></TD>
-                                <TD><input type="text" value="" name="cutoff"></TD>
-                                <TD><input type="text" value="" name="limit"></TD>
-                                <TD><input type="text" value="" name="threshold"></TD>
-                                <TD><input type="text" value="" name="timeout"></TD>
-                            </TR>
-                        </TABLE>
-                        <INPUT type="button" value="Add Row" onclick="addRowRepeat('repeat_settings')">
+                    <div class=fornm-group>
+                        <LABEL for="prefix_input" id="prefix_label">Commands prefix:</LABEL>
+                        <INPUT type="text" id="prefix_input" class="form-control">
+                        </div>
+                        <div class=fornm-group>
+                        <label for="manager_role_input">Role to manage the bot:</label>
+                        <textarea id="manager_role_input" class="form-control"></textarea>
+                        </div>
+                        <p>
+                            One role/permission per line.
+                            <br>
+                            Note that anyone with server administrator permissions can always manage the bot. If this is left
+                            blank, only users with server administrator permissions can manage the bot.
+                            <br>
+                            You may also supply the name of a Discord permissions attribute here, to cover multiple roles with
+                            a single entry. See <a href="https://docs.pycord.dev/en/master/api.html#permissions">the Pycord docs</a>
+                            for a list of names. They must be exact matches, including underscores, and they need to be preceded
+                            by the @ symbol.
+                        </p>
                     </div>
-
-                    <div id="MassMentionSettings" class="tab-pane fade">
-                        <label for="mention_enabled">Mass Mention Monitoring Enabled:</label>
-                        <input name="profanity-checkbox[]" id="mention_enabled" type="checkbox">
-                        <TABLE id="mention_settings" width="350px" border="1">
-                            <tr>
-                                <TH></TH>
-                                <TH>Enabled?</TH>
-                                <TH>Roles/Users (one per line, include #xxxx for users, role name for roles)</TH>
-                                <TH>Mention limit</TH>
-                                <TH>Time period (i.e 60s, 30m, etc.)</TH>
-                                <TH>Timeout Configuration Name</TH>
-                            </tr>
-                            <TR>
-                                <TD><input type="button" name="button1" value="Delete" onclick="removeRow('button1')"></TD>
-                                <TD><input name="enabled-checkbox[]" access="false" id="enabled-checkbox-0-mention_settings" value="exact" type="checkbox" checked="checked"></TD>
-                                <TD><textarea name="roles_area" cols="25" rows="3"></textarea></TD>
-                                <TD><input type="text" value="" name="limit"></TD>
-                                <TD><input type="text" value="" name="cutoff"></TD>
-                                <TD><input type="text" value="" name="timeout"></TD>
-                            </TR>
-                        </TABLE>
-                        <INPUT type="button" value="Add Row" onclick="addRowMentions('mention_settings')">
-                    </div>
-
-                    <div id="TimeoutConfigurations" class="tab-pane fade">
-                        <INPUT type="button" value="Add Configuration" onclick="addConfigTable()">
-                        <div id = timeout_config_div>
+                </form>
+                    <div id="AutomodTab" class="tab-pane fade">
+                        <ul class="nav nav-tabs">
+                            <li class="active"><a data-toggle="tab" href="#AutomodGeneralSettings">General</a></li>
+                            <li><a data-toggle="tab" href="#ProfanityFilter">Profanity Filter</a></li>
+                            <li><a data-toggle="tab" href="#SpamSettings">Spam Settings</a></li>
+                            <li><a data-toggle="tab" href="#RepeatMessageSettings">Repeat Message Settings</a></li>
+                            <li><a data-toggle="tab" href="#MassMentionSettings">Mass Mention Settings</a></li>
+                            <li><a data-toggle="tab" href="#TimeoutConfigurations">Timeout Configurations</a></li>
+                        </ul>
+                        <div class="tab-content">
+                            <div id="AutomodGeneralSettings" class="tab-pane fade in active">
+                                <label for="automod_enabled">Automod Enabled:</label>
+                                <input name="automod-checkbox[]" id="automod_enabled" type="checkbox">
+                                <br>
+                                <label for="message_count_input">Messages per user to save in DB:</label>
+                                <input type="text" value="" name="text" id="message_count_input">
+                            </div>
+        
+                            <div id="ProfanityFilter" class="tab-pane fade">
+                                <label for="profanity_enabled">Profanity Filter Enabled:</label>
+                                <input name="profanity-checkbox[]" id="profanity_enabled" type="checkbox">
+                                <TABLE id="profanity_settings" width="350px" border="1">
+                                    <tr>
+                                        <TH></TH>
+                                        <TH>Enabled?</TH>
+                                        <TH>Blacklist Text</TH>
+                                        <TH>Exact match?</TH>
+                                        <TH>Similarity threshold (0-1, 0.9 recommended)</TH>
+                                        <TH>Timeout Configuration Name</TH>
+                                    </tr>
+                                    <TR>
+                                        <TD><input type="button" name="button1" value="Delete" onclick="removeRow('button1')" class="btn btn-danger btn-sm"></TD>
+                                        <TD><input name="enabled-checkbox[]" id="enabled-checkbox-0-profanity_settings" type="checkbox" checked="checked"></TD>
+                                        <TD><input type="text" value="" name="text"></TD>
+                                        <TD><input name="exact-checkbox[]" id="exact-checkbox-0-profanity_settings" type="checkbox"></TD>
+                                        <TD><input type="text" value="" name="threshold"></TD>
+                                        <TD><input type="text" value="" name="timeout"></TD>
+                                    </TR>
+                                </TABLE>
+                                <INPUT type="button" value="Add Row" onclick="addRowProfanity('profanity_settings')" class="btn btn-warning btn-sm" style="margin-top: 5px;">
+                            </div>
+        
+                            <div id="SpamSettings" class="tab-pane fade">
+                                <label for="spam_enabled">Spam Filter Enabled:</label>
+                                <input name="profanity-checkbox[]" id="spam_enabled" type="checkbox">
+                                <TABLE id="spam_settings" width="350px" border="1">
+                                    <tr>
+                                        <TH></TH>
+                                        <TH>Enabled?</TH>
+                                        <TH>Time period (i.e 5s, 1m, etc.)</TH>
+                                        <TH>Message limit</TH>
+                                        <TH>Timeout Configuration Name</TH>
+                                    </tr>
+                                    <TR>
+                                        <TD><input type="button" name="button1" value="Delete" onclick="removeRow('button1')" class="btn btn-danger btn-sm"></TD>
+                                        <TD><input name="enabled-checkbox[]" access="false" id="enabled-checkbox-0-spam_settings" value="exact" type="checkbox" checked="checked"></TD>
+                                        <TD><input type="text" value="" name="cutoff"></TD>
+                                        <TD><input type="text" value="" name="limit"></TD>
+                                        <TD><input type="text" value="" name="timeout"></TD>
+                                    </TR>
+                                </TABLE>
+                                <INPUT type="button" value="Add Row" onclick="addRowSpam('spam_settings')"  class="btn btn-warning btn-sm" style="margin-top: 5px;">
+                            </div>
+        
+                            <div id="RepeatMessageSettings" class="tab-pane fade">
+                                <label for="repeat_enabled">Repeated Message Filter Enabled:</label>
+                                <input name="profanity-checkbox[]" id="repeat_enabled" type="checkbox">
+                                <TABLE id="repeat_settings" width="350px" border="1">
+                                    <tr>
+                                        <TH></TH>
+                                        <TH>Enabled?</TH>
+                                        <TH>Time period (i.e 5s, 1m, etc.)</TH>
+                                        <TH>Message limit</TH>
+                                        <TH>Similarity threshold (0-1, 0.9 recommended)</TH>
+                                        <TH>Timeout Configuration Name</TH>
+                                    </tr>
+                                    <TR>
+                                        <TD><input type="button" name="button1" value="Delete" onclick="removeRow('button1')" class="btn btn-danger btn-sm"></TD>
+                                        <TD><input name="enabled-checkbox[]" access="false" id="enabled-checkbox-0-repeat_settings" value="exact" type="checkbox" checked="checked"></TD>
+                                        <TD><input type="text" value="" name="cutoff"></TD>
+                                        <TD><input type="text" value="" name="limit"></TD>
+                                        <TD><input type="text" value="" name="threshold"></TD>
+                                        <TD><input type="text" value="" name="timeout"></TD>
+                                    </TR>
+                                </TABLE>
+                                <INPUT type="button" value="Add Row" onclick="addRowRepeat('repeat_settings')"  class="btn btn-warning btn-sm" style="margin-top: 5px;">
+                            </div>
+        
+                            <div id="MassMentionSettings" class="tab-pane fade">
+                                <label for="mention_enabled">Mass Mention Monitoring Enabled:</label>
+                                <input name="profanity-checkbox[]" id="mention_enabled" type="checkbox">
+                                <TABLE id="mention_settings" width="350px" border="1">
+                                    <tr>
+                                        <TH></TH>
+                                        <TH>Enabled?</TH>
+                                        <TH>Roles/Users (one per line, include #xxxx for users, role name for roles)</TH>
+                                        <TH>Mention limit</TH>
+                                        <TH>Time period (i.e 60s, 30m, etc.)</TH>
+                                        <TH>Timeout Configuration Name</TH>
+                                    </tr>
+                                    <TR>
+                                        <TD><input type="button" name="button1" value="Delete" onclick="removeRow('button1')" class="btn btn-danger btn-sm"></TD>
+                                        <TD><input name="enabled-checkbox[]" access="false" id="enabled-checkbox-0-mention_settings" value="exact" type="checkbox" checked="checked"></TD>
+                                        <TD><textarea name="roles_area" cols="25" rows="3"></textarea></TD>
+                                        <TD><input type="text" value="" name="limit"></TD>
+                                        <TD><input type="text" value="" name="cutoff"></TD>
+                                        <TD><input type="text" value="" name="timeout"></TD>
+                                    </TR>
+                                </TABLE>
+                                <INPUT type="button" value="Add Row" onclick="addRowMentions('mention_settings')"  class="btn btn-warning btn-sm" style="margin-top: 5px;">
+                            </div>
+        
+                            <div id="TimeoutConfigurations" class="tab-pane fade">
+                                <INPUT type="button" value="Add Configuration" onclick="addConfigTable()">
+                                <div id = timeout_config_div>
+                                </div>
+                            </div>
                         </div>
                     </div>
+                    <div id="HelperTab" class="tab-pane fade">
+                        <label for="helper_enabled">Auto Helper Enabled:</label>
+                        <input name="profanity-checkbox[]" id="helper_enabled" type="checkbox">
+                        <TABLE id="helper_settings" width="350px" border="1">
+                            <tr>
+                                <TH></TH>
+                                <TH>Enabled?</TH>
+                                <TH>Search Text</TH>
+                                <TH>Exact match?</TH>
+                                <TH>Similarity threshold (0-1, 0.9 recommended)</TH>
+                                <TH>Response Text</TH>
+                            </tr>
+                            <TR>
+                                <TD><input type="button" name="button1" value="Delete" onclick="removeRow('button1')" class="btn btn-danger btn-sm"></TD>
+                                <TD><input name="enabled-checkbox[]" id="enabled-checkbox-0-helper_settings" type="checkbox" checked="checked"></TD>
+                                <TD><textarea name="helper_search_text" cols="60" rows="5"></textarea></TD>
+                                <TD><input name="exact-checkbox[]" id="exact-checkbox-0-helper_settings" type="checkbox"></TD>
+                                <TD><input type="text" value="" name="threshold"></TD>
+                                <TD><textarea name="helper_response_text" cols="60" rows="5"></textarea></TD>
+                            </TR>
+                        </TABLE>
+                    </div>
+                    <div id="LoggingTab" class="tab-pane fade">
+                        <label for="message_count_input">Logging channel name (don't include #):</label>
+                        <input type="text" value="" name="text" id="logging_channel_input">
+                        <br>
+                        <label for="log_bans">Log bans:</label>
+                        <input name="profanity-checkbox[]" id="log_bans" type="checkbox">
+                        <br>
+                        <label for="log_deletes">Log message deletions:</label>
+                        <input name="profanity-checkbox[]" id="log_deletes" type="checkbox">
+                        <br>
+                        <label for="log_timeouts">Log timeouts:</label>
+                        <input name="profanity-checkbox[]" id="log_timeouts" type="checkbox">
+                        <br>
+                        <label for="log_help_replies">Log help replies:</label>
+                        <input name="profanity-checkbox[]" id="log_help_replies" type="checkbox">
+                        <br>
+                        <label for="log_settings_changes">Log changes to bot settings:</label>
+                        <input name="profanity-checkbox[]" id="log_settings_changes" type="checkbox">
+                        <br>
+                    </div>
                 </div>
+                <LABEL for="save_button" id="result_label"></LABEL>
+                <INPUT type="button" value="Save" id="save_button" onclick="dump_settings()" class="btn btn-primary" style="margin-top: 5px; float: right;">
+                <SCRIPT language="JavaScript">
+                    try {
+                        // preserve newlines, etc - use valid JSON
+                        let s = '{{  }}'.replace(/\\n/g, "\\n")
+                            .replace(/\\'/g, "\\'")
+                            .replace(/\\"/g, '\\"')
+                            .replace(/\\&/g, "\\&")
+                            .replace(/\\r/g, "\\r")
+                            .replace(/\\t/g, "\\t")
+                            .replace(/\\b/g, "\\b")
+                            .replace(/\\f/g, "\\f");
+                        // remove non-printable and other non-valid JSON chars
+                        s = s.replace(/[\u0000-\u0019]+/g,"");
+                        let json = JSON.parse(s);
+                        load_settings(json);
+                    } catch( e) {
+                        // conversion fails
+                        console.error( e )
+                    }
+                </SCRIPT>
+                <script>
+                    w3CodeColor();
+                </script>
+              </div>
             </div>
-            <div id="HelperTab" class="tab-pane fade">
-                <label for="helper_enabled">Auto Helper Enabled:</label>
-                <input name="profanity-checkbox[]" id="helper_enabled" type="checkbox">
-                <TABLE id="helper_settings" width="350px" border="1">
-                    <tr>
-                        <TH></TH>
-                        <TH>Enabled?</TH>
-                        <TH>Search Text</TH>
-                        <TH>Exact match?</TH>
-                        <TH>Similarity threshold (0-1, 0.9 recommended)</TH>
-                        <TH>Response Text</TH>
-                    </tr>
-                    <TR>
-                        <TD><input type="button" name="button1" value="Delete" onclick="removeRow('button1')"></TD>
-                        <TD><input name="enabled-checkbox[]" id="enabled-checkbox-0-helper_settings" type="checkbox" checked="checked"></TD>
-                        <TD><textarea name="helper_search_text" cols="60" rows="5"></textarea></TD>
-                        <TD><input name="exact-checkbox[]" id="exact-checkbox-0-helper_settings" type="checkbox"></TD>
-                        <TD><input type="text" value="" name="threshold"></TD>
-                        <TD><textarea name="helper_response_text" cols="60" rows="5"></textarea></TD>
-                    </TR>
-                </TABLE>
-            </div>
-            <div id="LoggingTab" class="tab-pane fade">
-                <label for="message_count_input">Logging channel name (don't include #):</label>
-                <input type="text" value="" name="text" id="logging_channel_input">
-                <br>
-                <label for="log_bans">Log bans:</label>
-                <input name="profanity-checkbox[]" id="log_bans" type="checkbox">
-                <br>
-                <label for="log_deletes">Log message deletions:</label>
-                <input name="profanity-checkbox[]" id="log_deletes" type="checkbox">
-                <br>
-                <label for="log_timeouts">Log timeouts:</label>
-                <input name="profanity-checkbox[]" id="log_timeouts" type="checkbox">
-                <br>
-                <label for="log_help_replies">Log help replies:</label>
-                <input name="profanity-checkbox[]" id="log_help_replies" type="checkbox">
-                <br>
-                <label for="log_settings_changes">Log changes to bot settings:</label>
-                <input name="profanity-checkbox[]" id="log_settings_changes" type="checkbox">
-                <br>
-            </div>
-        </div>
-        <SCRIPT language="JavaScript">
-            try {
-                // preserve newlines, etc - use valid JSON
-                let s = '{{ settings|safe }}'.replace(/\\n/g, "\\n")
-                    .replace(/\\'/g, "\\'")
-                    .replace(/\\"/g, '\\"')
-                    .replace(/\\&/g, "\\&")
-                    .replace(/\\r/g, "\\r")
-                    .replace(/\\t/g, "\\t")
-                    .replace(/\\b/g, "\\b")
-                    .replace(/\\f/g, "\\f");
-                // remove non-printable and other non-valid JSON chars
-                s = s.replace(/[\u0000-\u0019]+/g,"");
-                let json = JSON.parse(s);
-                load_settings(json);
-            } catch( e) {
-                // conversion fails
-                console.error( e )
-            }
-        </SCRIPT>
-        <script>
-            w3CodeColor();
-        </script>
+          </div>
+    
     </body>
 </html>
