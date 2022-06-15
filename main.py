@@ -18,6 +18,11 @@ app.config["DISCORD_REDIRECT_URI"] = "http://localhost:5000/callback"
 discordOAuth = DiscordOAuth2Session(app)
 
 
+@app.route('/favicon.ico')
+def favicon():
+    return redirect(url_for('static', filename='favicon.ico'))
+
+
 async def verify_authorized(guild_id):
     if not await discordOAuth.authorized:
         return False
