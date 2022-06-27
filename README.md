@@ -1,4 +1,4 @@
-# Discord AutoModeration Bot
+# Discord AutoModeration Bot (WIP)
 
 This readme contains the basic information you need to work with the source. Each module is documented. Understanding the individual functions' behavior is for now left to you, since the project is very small and still being actively reworked on a lower level.
 
