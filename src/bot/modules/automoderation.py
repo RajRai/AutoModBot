@@ -1,9 +1,10 @@
 import pytz
 from thefuzz import fuzz
-from discord import *
 from config.config import seconds_per_unit
-from logging import *
+from src.bot.modules.logging import *
 import src.database.queries as queries
+from config.config import settings_for_guild
+import datetime
 
 if __name__ == "__main__":
     message = 'p a n d a s are bad painters'
@@ -17,7 +18,7 @@ timeouts = {}
 
 
 def convert_to_seconds(s):
-    if s == '' or s[:-1] not in seconds_per_unit or not s[:-1].isDigit():
+    if s == '' or s[-1] not in seconds_per_unit or not s[:-1].isdigit():
         return 0
     return int(s[:-1]) * seconds_per_unit[s[-1]]
 
@@ -48,7 +49,7 @@ def check_frequency_limited(message: Message, messages, rule, out_arr, discrimin
     cutoff = datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(
         seconds=convert_to_seconds(rule.cutoff))
     for old in messages[::-1]:
-        if pytz.UTC.localize(datetime.datetime.strptime(old[1][:-4], '%Y-%m-%d %H:%M:%S')) < cutoff:
+        if pytz.UTC.localize(datetime.datetime.strptime(old['time'][:-4], '%Y-%m-%d %H:%M:%S')) < cutoff:
             break
         if discriminant(old, message):
             out_arr.append(old)
@@ -144,7 +145,6 @@ async def give_ban(message: Message, reason: str, info: dict):
 
 
 async def give_timeout(message: Message, reason: str, info: dict):
-    await message.delete()
     settings = settings_for_guild(message.guild.id)
     time = get_timeout_duration(message.author.id, message.guild.id, info['rule'], settings)
     if time == 'ban':
@@ -155,11 +155,12 @@ async def give_timeout(message: Message, reason: str, info: dict):
     timeout = datetime.datetime.utcnow() + datetime.timedelta(seconds=time)
     timeouts[(message.author.id, message.guild.id)] = timeout, reason, message.content
     await log_timeout(message, time, reason, info)
+    await message.delete()
 
 
 async def notify_timeout(message: Message):
+    await notify_timeout_deletion(message, timeouts)
     await message.delete()
-    await log_timeout(message)
 
 
 async def auto_moderate(message: Message):
@@ -178,6 +179,7 @@ async def auto_moderate(message: Message):
     if (message.author.id, message.guild.id) in timeouts and timeouts[(message.author.id, message.guild.id)][0] \
             > datetime.datetime.utcnow():
         await notify_timeout(message)
+        return
 
     if settings.automod.blacklist.enabled:
         result = check_blacklist(message)
@@ -210,11 +212,11 @@ async def auto_moderate(message: Message):
 
     if flags['blacklist']['flagged']:
         await give_timeout(message, 'profanity', flags['blacklist'])
-    if flags['repeat']['flagged']:
+    elif flags['repeat']['flagged']:
         await give_timeout(message, 'repeated messages', flags['repeat'])
-    if flags['spam']['flagged']:
+    elif flags['spam']['flagged']:
         await give_timeout(message, 'spam', flags['spam'])
-    if flags['mentions']['flagged']:
+    elif flags['mentions']['flagged']:
         await give_timeout(message, 'mass-mentions', flags['mentions'])
 
 

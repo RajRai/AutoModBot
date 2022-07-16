@@ -2,10 +2,12 @@ from src.bot.bot import bot, is_server_manager
 from discord.ext import commands
 from config.config import *
 import discord
-import modules.automoderation as am
+import src.bot.modules.automoderation as am
+
 
 def is_dev(ctx):
     return ctx.author.id == 296153936665247745
+
 
 def is_server_manager_ctx(ctx):
     return is_server_manager(ctx.guild.id, ctx.author)

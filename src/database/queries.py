@@ -44,9 +44,8 @@ def select_dict(columns: str, table: str, append: str):
         d = {}
         splits = columns.split(',')
         for i in range(len(splits)):
-            col = splits[i]
-            d[col.strip()] = r[r[i]]
-        result.append(r)
+            d[splits[i].strip()] = r[i]
+        result.append(d)
 
     return result
 
@@ -75,7 +74,7 @@ def get_messages(user: int):
 
 def get_mentions(user: int):
     return select_dict(columns="user_mentions, role_mentions, mentions_everyone, message, time", table="MESSAGES",
-                       append=f"WHERE user = {user}"
+                       append=f"WHERE user = {user}\n" +
                               f"AND (user_mentions != '' OR role_mentions != '' OR mentions_everyone != 0)")
 
 

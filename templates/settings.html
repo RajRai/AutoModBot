@@ -30,13 +30,15 @@
                 <LABEL for="prefix_input" id="prefix_label">Commands prefix:</LABEL>
                 <INPUT type="text" id="prefix_input">
                 <br>
-                <label for="manager_role_input">Role to manage the bot:</label>
+                <label for="manager_role_input">Role/users who can manage the bot:</label>
                 <textarea id="manager_role_input" cols="25" rows="3"></textarea>
                 <p>
-                    One role/permission per line.
+                    One role/permission/name per line. Capitalization doesn't matter.
                     <br>
                     Note that anyone with server administrator permissions can always manage the bot. If this is left
                     blank, only users with server administrator permissions can manage the bot.
+                    <br>
+                    Usernames should be in this format: name#1234
                     <br>
                     You may also supply the name of a Discord permissions attribute here, to cover multiple roles with
                     a single entry. See <a href="https://docs.pycord.dev/en/master/api.html#permissions">the Pycord docs</a>

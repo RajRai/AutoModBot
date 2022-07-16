@@ -1,5 +1,8 @@
 import json
 import sys
+import traceback
+from asyncio import sleep
+
 import discord
 import requests
 from discord import *
@@ -24,16 +27,18 @@ def is_server_manager(guild: int, user: Member):
         return True
     if 'manager_role' not in settings:
         return False
-    for role in settings['manager_role']:
-        if role == '':
+    for entry in settings['manager_role']:
+        if entry == '':
             continue
-        if role[0] == '@':  # Signals that we should use the permissions attribute
+        if entry[0] == '@':  # Signals that we should use the permissions attribute
             try:
                 if getattr(user.top_role.permissions, role[1:].lower()):
                     return True
             except Exception:
                 pass
-        elif role.lower() in [r.name.lower() for r in user.roles]:
+        elif entry.lower() in [r.name.lower() for r in user.roles]:
+            return True
+        elif entry.lower() == user.name.lower() + '#' + user.discriminator:
             return True
     return user.top_role.permissions.manage_guild
 
@@ -46,6 +51,7 @@ async def update_message_history(message: Message):
 
 @bot.event
 async def on_message(message: Message):
+    await sleep(0.25)
     try:
         if message.author.bot:
             return
@@ -56,8 +62,8 @@ async def on_message(message: Message):
             await auto_moderate(message)
             await update_message_history(message)
             await check_helper(message)
-    except Exception as e:
-        print(e)
+    except Exception:
+        traceback.print_exc()
 
 
 @bot.event
@@ -68,6 +74,7 @@ async def on_command_error(ctx, error):
         await ctx.reply("You lack the permissions to use that command...")
     else:
         await ctx.reply("An unspecified error occurred")
+        print(error)
 
 
 async def log_setting_change(guild_id: int, user: User):  # Thanks Quart
@@ -118,3 +125,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# noinspection PyUnresolvedReferences
+import src.bot.commands as cmds  # D: (fix for circular import, dont remove)

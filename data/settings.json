@@ -308,7 +308,7 @@
                         "content": [
                             ""
                         ],
-                        "cutoff": "",
+                        "cutoff": "0s",
                         "enabled": false,
                         "limit": null,
                         "timeout": ""
@@ -319,7 +319,7 @@
                 "enabled": true,
                 "rules": [
                     {
-                        "cutoff": "",
+                        "cutoff": "0s",
                         "enabled": true,
                         "limit": null,
                         "threshold": null,
@@ -332,16 +332,16 @@
                 "enabled": true,
                 "rules": [
                     {
-                        "cutoff": "",
+                        "cutoff": "1m",
                         "enabled": true,
-                        "limit": null,
-                        "timeout": ""
+                        "limit": 3,
+                        "timeout": "spam"
                     }
                 ]
             },
             "timeout": [
                 {
-                    "name": "profanity",
+                    "name": "spam",
                     "steps": [
                         {
                             "cutoff": "1d",
@@ -352,13 +352,13 @@
                     ]
                 },
                 {
-                    "name": "spam",
+                    "name": "profanity",
                     "steps": [
                         {
                             "cutoff": "1d",
                             "enabled": true,
                             "offenseCount": "1",
-                            "timeout": "0m"
+                            "timeout": "10s"
                         }
                     ]
                 }
@@ -386,7 +386,7 @@
             "timeouts": true
         },
         "manager_role": [
-            ""
+            "raj#4260"
         ],
         "prefix": "!"
     }
