@@ -6,12 +6,16 @@ from attrdict import AttrDict
 from dataclasses import dataclass
 
 script_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 DB_FILE = os.path.join(script_dir, 'data', 'dev.db')
+
 JSON_PATH = os.path.join(script_dir, 'data', 'settings.json')
 DEFAULTS_PATH = os.path.join(script_dir, 'config', 'default_settings.json')
 JSON_DUMP_PATH = JSON_PATH
-# JSON_DUMP_PATH = os.path.join(script_dir, 'config', 'settings_dump.json')
-# JSON_PATH = JSON_DUMP_PATH
+
+HOST = '0.0.0.0'  # Externally visible host
+WEB_PORT = 5000
+
 json_file = open(JSON_PATH)
 settings = json.load(json_file)
 json_file.close()

@@ -1,20 +1,23 @@
+import asyncio
+import functools
 import json
 import threading
 import time
-
+from config.private import TOKEN
 from quart_discord import DiscordOAuth2Session
-from src.bot.bot import main, bot, log_setting_change, is_server_manager
+from src.bot.bot import main, main_async, bot, log_setting_change, is_server_manager
 from quart import Quart, render_template, request, redirect, url_for
-from config.private import SECRET_KEY, CLIENT_ID, CLIENT_SECRET
+from src.quart_threaded import ThreadedApp
+from config.private import SECRET_KEY, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
 import config.config as config
 from src.database.schema import init as db_init
 
-app = Quart(__name__)
+app = ThreadedApp(__name__)
 
 app.config["SECRET_KEY"] = SECRET_KEY
 app.config["DISCORD_CLIENT_ID"] = CLIENT_ID  # Discord client ID.
 app.config["DISCORD_CLIENT_SECRET"] = CLIENT_SECRET  # Discord client secret.
-app.config["DISCORD_REDIRECT_URI"] = "http://localhost:5000/callback"
+app.config["DISCORD_REDIRECT_URI"] = REDIRECT_URI
 discordOAuth = DiscordOAuth2Session(app)
 
 
@@ -85,22 +88,27 @@ async def settings(guild_id: int):
     return await render_template('settings.html', settings=json.dumps(sett))
 
 
-def init():
-    web_app = threading.Thread(target=app.run)
-    web_app.daemon = True
-    bot_t = threading.Thread(target=main)
-    bot_t.daemon = True
+async def init():
+    bot_t = threading.Thread(target=main, daemon=True)
 
-    web_app.start()
+    web = threading.Thread(target=app.run, kwargs={
+        'port': config.WEB_PORT,
+        'host': config.HOST
+    })
+    web.daemon = True
+    web.start()
+
     bot_t.start()
 
     try:
-        while threading.active_count() > 0:
+        while True:
             time.sleep(1)
     except KeyboardInterrupt:
         print('Terminating due to Ctrl+C')
+        web.join(timeout=0)
+        asyncio.get_running_loop().close()
 
 
 if __name__ == "__main__":
     db_init()
-    init()
+    asyncio.run(init())

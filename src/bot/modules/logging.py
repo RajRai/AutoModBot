@@ -34,9 +34,8 @@ def generate_info(reason: str, info: dict, message: str = ''):
 
 
 async def log_timeout(message: Message, duration: int, reason: str, info: dict):
-    print('Log Timeout')
     settings = settings_for_guild(message.guild.id)
-    offenses = queries.get_offenses(message.author.id, message.guild.id)
+    offenses = queries.get_offenses(message.author.id, message.guild.id)[:15]
     user = message.author
     queries.log_timeout(user.id, message.guild.id, duration, reason, message.content)
     if settings.logging.timeouts and duration > 0 or settings.logging.deletes:

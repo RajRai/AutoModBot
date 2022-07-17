@@ -1,3 +1,4 @@
+import asyncio
 import json
 import sys
 import traceback
@@ -15,10 +16,12 @@ from src.bot.modules.automoderation import auto_moderate
 from config.config import settings_for_guild, settings_for_guild_dict
 from config import config
 
+from src.pycord_threaded import ThreadedPycordClient
+
 prefix = config.prefix
 
 intents = discord.Intents.all()
-bot = commands.Bot(command_prefix=prefix, intents=intents)
+bot = ThreadedPycordClient(command_prefix=prefix, intents=intents)
 
 
 def is_server_manager(guild: int, user: Member):
