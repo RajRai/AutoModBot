@@ -11,14 +11,18 @@ from src.quart_threaded import ThreadedApp
 from config.private import SECRET_KEY, CLIENT_ID, CLIENT_SECRET, REDIRECT_URI
 import config.config as config
 from src.database.schema import init as db_init
+from uvicorn.middleware.proxy_headers import ProxyHeadersMiddleware
 
+
+# App is behind one proxy that sets the -For and -Host headers.
 app = ThreadedApp(__name__)
+app.asgi_app = ProxyHeadersMiddleware(app.asgi_app, trusted_hosts=["127.0.0.1", "192.168.0.10"])  # nginx server IP
 
 app.config["SECRET_KEY"] = SECRET_KEY
 app.config["DISCORD_CLIENT_ID"] = CLIENT_ID  # Discord client ID.
 app.config["DISCORD_CLIENT_SECRET"] = CLIENT_SECRET  # Discord client secret.
 app.config["DISCORD_REDIRECT_URI"] = REDIRECT_URI
-discordOAuth = DiscordOAuth2Session(app)
+discordOAuth = DiscordOAuth2Session(app, bot_token=TOKEN)
 
 
 @app.route('/favicon.ico')
@@ -48,7 +52,7 @@ async def home():
 
 @app.route("/login")
 async def login():
-    return await discordOAuth.create_session(prompt=False)
+    return await discordOAuth.create_session(prompt=True)
 
 
 @app.route("/callback")

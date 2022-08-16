@@ -2,6 +2,9 @@ from quart.app import *
 
 
 class ThreadedApp(Quart):  # Threaded in the sense that it doesn't throw any errors...
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     def run(
             self,
             host: Optional[str] = None,

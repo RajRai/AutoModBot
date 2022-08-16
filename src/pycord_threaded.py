@@ -6,6 +6,9 @@ from discord.ext.commands import Bot
 
 
 class ThreadedPycordClient(Bot):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     def run(self, *args, **kwargs):
         """A blocking call that abstracts away the event loop
         initialisation from you.
@@ -65,5 +68,4 @@ class ThreadedPycordClient(Bot):
             try:
                 return future.result()
             except KeyboardInterrupt:
-                # I am unsure why this gets raised here but suppress it anyway
                 return None
