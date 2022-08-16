@@ -206,6 +206,7 @@ function addRowHelper(tableID) {
     cell2.appendChild(element2);
     //Column 3
     var element3 = document.createElement("textarea");
+    var cell3 = row.insertCell(2);
     element3.cols = "25";
     element3.rows = "3";
     cell3.appendChild(element3);
