@@ -43,14 +43,6 @@ def init_settings_for_guild(guild: int):
     replace_settings_for_guild(guild, sett)
 
 
-@dataclass
-class SettingValidation:
-    setting: Any
-    replace: Callable[[Any], Any]
-    test: Callable[[Any], bool] = lambda x: True
-    iterate: bool = False
-
-
 def validate_settings(sett: dict):
     # Anything validated anywhere in this function should also be defined in default_settings.json to avoid any key
     # errors.
