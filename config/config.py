@@ -55,14 +55,14 @@ def validate_settings(sett: dict):
 
     for mode in ['mentions', 'repeat', 'spam']:
         for r in sett['automod'][mode]['rules']:
-            if r['cutoff'][-1] not in seconds_per_unit or not r['cutoff'][:-1].isdigit():
+            if len(r['cutoff']) == 0 or r['cutoff'][-1] not in seconds_per_unit or not r['cutoff'][:-1].isdigit():
                 r['cutoff'] = r['cutoff'] + 's' if r['cutoff'].isdigit() else '0s'
 
     for t in sett['automod']['timeout']:
         for s in t['steps']:
-            if s['cutoff'][-1] not in seconds_per_unit or not s['cutoff'][:-1].isdigit():
+            if len(s['cutoff']) == 0 or s['cutoff'][-1] not in seconds_per_unit or not s['cutoff'][:-1].isdigit():
                 s['cutoff'] = s['cutoff'] + 's' if s['cutoff'].isdigit() else '0s'
-            if s['timeout'][-1] not in seconds_per_unit or not s['timeout'][:-1].isdigit():
+            if len(s['timeout']) == 0 or s['timeout'][-1] not in seconds_per_unit or not s['timeout'][:-1].isdigit():
                 s['timeout'] = s['timeout'] + 's' if s['timeout'].isdigit() else '0s'
 
     return sett
