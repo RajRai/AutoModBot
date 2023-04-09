@@ -2,6 +2,16 @@
 
 This readme contains the basic information you need to work with the source. Each module is documented. Understanding the individual functions' behavior is for now left to you, since the project is very small and still being actively reworked on a lower level.
 
+TODOs:
+- Remove web UI, use slash commands
+- Improve threading (if the web UI isn't removed)
+- Better DB infrastructure
+- Encrypt messages in DB
+
+I'm not going to be doing any of those things, as I have other things to work on, for now.
+
+Everything below this might be outdated, it also might not.
+
 ## `main.py`
 This is the main entry point to the bot, and its web interface. Both the Quart app and PyCord bot will be started asynchronously. The Quart app is dependent on the bot running, but the bot can be run independently of the Quart app.
 
