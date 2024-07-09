@@ -7,6 +7,7 @@ TODOs:
 - Improve threading (if the web UI isn't removed)
 - Better DB infrastructure
 - Encrypt messages in DB
+- There is probably a huge SQL injection vulnerability
 
 I'm not going to be doing any of those things, as I have other things to work on, for now.
 
